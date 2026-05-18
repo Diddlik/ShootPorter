@@ -1,0 +1,88 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ShootPorter.App.ViewModels"
+             xmlns:suki="using:SukiUI.Controls"
+             x:Class="ShootPorter.App.Views.SourcePickerCard"
+             x:DataType="vm:MainWindowViewModel">
+
+    <suki:GlassCard Padding="12">
+        <StackPanel Spacing="10">
+            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                <PathIcon Data="{StaticResource IconFolder}" Width="14" Height="14"
+                          Opacity="0.72" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="Source" Margin="7,0,0,0"
+                           FontSize="13" FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+                <Button Grid.Column="2" Classes="Basic" Padding="5"
+                        Command="{Binding RescanSourceCommand}"
+                        IsEnabled="{Binding HasSelectedSourcePath}"
+                        ToolTip.Tip="Rescan source folder">
+                    <PathIcon Data="{StaticResource IconRefresh}" Width="13" Height="13"
+                              Opacity="0.62"/>
+                </Button>
+            </Grid>
+
+            <Border CornerRadius="8" Padding="9,7" Background="#111827"
+                    BorderBrush="#223044" BorderThickness="1">
+                <TextBlock Text="{Binding DisplaySourcePath}"
+                           ToolTip.Tip="{Binding SelectedSourcePath}"
+                           FontSize="12" TextTrimming="CharacterEllipsis"/>
+            </Border>
+
+            <Button Classes="Flat Accent" Padding="10,8"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                    Click="ChooseFolder_Click"
+                    ToolTip.Tip="Choose source folder">
+                <StackPanel Orientation="Horizontal" Spacing="7">
+                    <PathIcon Data="{StaticResource IconFolder}" Width="13" Height="13"/>
+                    <TextBlock Text="Choose Folder" FontSize="12" FontWeight="SemiBold"/>
+                </StackPanel>
+            </Button>
+
+            <Button Classes="Basic" Padding="8,6"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                    IsVisible="{Binding HasRecentSourcePaths}"
+                    ToolTip.Tip="Recent source folders">
+                <Button.Flyout>
+                    <Flyout Placement="Top">
+                        <Border Padding="12" MinWidth="220"
+                                CornerRadius="10"
+                                Background="#1B2230"
+                                BorderBrush="#314052"
+                                BorderThickness="1">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Recent folders" FontSize="12"
+                                           FontWeight="SemiBold" Opacity="0.72"/>
+                                <ItemsControl ItemsSource="{Binding RecentSourcePaths}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Classes="Basic" Padding="8,6"
+                                                    HorizontalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Left"
+                                                    Tag="{Binding}"
+                                                    Click="RecentSource_Click"
+                                                    ToolTip.Tip="{Binding}">
+                                                <TextBlock Text="{Binding}" FontSize="11"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </Flyout>
+                </Button.Flyout>
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Recent" FontSize="12" Opacity="0.72"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text=">" FontSize="14" Opacity="0.54"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Button>
+
+            <TextBlock Text="{Binding SourceStatusText}" FontSize="11" Opacity="0.62"
+                       TextTrimming="CharacterEllipsis"
+                       ToolTip.Tip="Detected media files count"/>
+        </StackPanel>
+    </suki:GlassCard>
+</UserControl>

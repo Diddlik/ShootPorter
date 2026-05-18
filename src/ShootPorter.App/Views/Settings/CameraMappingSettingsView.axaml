@@ -1,0 +1,75 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ShootPorter.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:suki="using:SukiUI.Controls"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+             x:Class="ShootPorter.App.Views.Settings.CameraMappingSettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <StackPanel Spacing="16">
+        <StackPanel>
+            <TextBlock Text="Camera Mapping" FontSize="20" FontWeight="SemiBold"/>
+            <TextBlock Text="Map camera models to specific tokens." Opacity="0.6" FontSize="13"/>
+        </StackPanel>
+
+        <suki:GlassCard>
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <ToggleSwitch IsChecked="{Binding IdentifyCameraBySerial}" OnContent="" OffContent=""/>
+                    <TextBlock Text="Identify camera using serial number" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Detected Camera" Opacity="0.6" FontSize="12"/>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <TextBox Text="{Binding DetectedCamera}" IsReadOnly="True"
+                                 FontFamily="Consolas,Courier New,monospace"/>
+                        <Button Grid.Column="1" Content="Add to Mappings" Classes="Flat Accent"
+                                Command="{Binding AddCameraMappingCommand}"/>
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </suki:GlassCard>
+
+        <suki:GlassCard>
+            <StackPanel Spacing="12">
+                <TextBlock Text="Camera Mappings" FontWeight="SemiBold" FontSize="14"/>
+                <TextBlock Text="Define {T8} and {T9} token values for each camera model."
+                           Opacity="0.6" FontSize="12"/>
+
+                <ItemsControl ItemsSource="{Binding CameraMappings}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CameraMappingItem">
+                            <Border BorderBrush="#e2e8f0" BorderThickness="0,0,0,1" Padding="0,8" Margin="0,0,0,4">
+                                <Grid ColumnDefinitions="*,120,120,Auto" ColumnSpacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="Camera" Opacity="0.5" FontSize="10"/>
+                                        <TextBlock Text="{Binding CameraModel}" FontWeight="SemiBold" FontSize="13"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="2">
+                                        <TextBlock Text="{}{T8}" Opacity="0.5" FontSize="10"
+                                                   FontFamily="Consolas,Courier New,monospace"/>
+                                        <TextBox Text="{Binding T8Value}" FontSize="12" Padding="6,4"
+                                                 FontFamily="Consolas,Courier New,monospace"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Spacing="2">
+                                        <TextBlock Text="{}{T9}" Opacity="0.5" FontSize="10"
+                                                   FontFamily="Consolas,Courier New,monospace"/>
+                                        <TextBox Text="{Binding T9Value}" FontSize="12" Padding="6,4"
+                                                 FontFamily="Consolas,Courier New,monospace"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="3" Classes="Flat" Padding="6,4"
+                                            Command="{Binding DeleteCommand}" VerticalAlignment="Bottom"
+                                            ToolTip.Tip="Remove mapping">
+                                        <PathIcon Data="{StaticResource IconDelete}" Width="14" Height="14"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </suki:GlassCard>
+    </StackPanel>
+</UserControl>

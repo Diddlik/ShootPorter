@@ -1,0 +1,145 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ShootPorter.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:suki="using:SukiUI.Controls"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+             x:Class="ShootPorter.App.Views.Settings.DownloadPathSettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <StackPanel Spacing="16">
+        <StackPanel>
+            <TextBlock Text="Download Path and Naming" FontSize="20" FontWeight="SemiBold"/>
+            <TextBlock Text="Configure where files are saved and how they are renamed." Opacity="0.6" FontSize="13"/>
+        </StackPanel>
+
+        <suki:GlassCard>
+            <StackPanel Spacing="8">
+                <TextBlock Text="Active Profile" FontWeight="SemiBold"/>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <ComboBox ItemsSource="{Binding Profiles}" 
+                              SelectedItem="{Binding SelectedProfile}"
+                              HorizontalAlignment="Stretch">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ProfileItem">
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="1" Classes="Flat"
+                            Command="{Binding DeleteSelectedProfileCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <PathIcon Data="{StaticResource IconDelete}" Width="14" Height="14"/>
+                            <TextBlock Text="Delete"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </suki:GlassCard>
+
+        <suki:GlassCard>
+            <StackPanel Spacing="16">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Base Download Directory" FontWeight="SemiBold"/>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <TextBox Text="{Binding DestinationRoot}" 
+                                 Watermark="R:\New Fotos\"
+                                 FontFamily="Consolas,Courier New,monospace"/>
+                        <Button Grid.Column="1" Content="Browse" Classes="Flat"
+                                Click="BrowseDestination_Click"/>
+                    </Grid>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Backup Directory 1" FontWeight="SemiBold"/>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <TextBox Text="{Binding BackupPath1}"
+                                     Watermark="Optional"
+                                     FontFamily="Consolas,Courier New,monospace"/>
+                            <Button Grid.Column="1" Content="Browse" Classes="Flat"
+                                    Click="BrowseBackup1_Click"/>
+                        </Grid>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="6">
+                        <TextBlock Text="Backup Directory 2" FontWeight="SemiBold"/>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <TextBox Text="{Binding BackupPath2}"
+                                     Watermark="Optional"
+                                     FontFamily="Consolas,Courier New,monospace"/>
+                            <Button Grid.Column="1" Content="Browse" Classes="Flat"
+                                    Click="BrowseBackup2_Click"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Filename Template" FontWeight="SemiBold"/>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <TextBox Text="{Binding DestinationTemplate}" 
+                                 FontFamily="Consolas,Courier New,monospace"/>
+                        <Button Grid.Column="1" Content="Show Tokens" Classes="Flat"
+                                Click="ShowTokenHelp_Click"/>
+                    </Grid>
+                </StackPanel>
+                
+                <suki:GlassCard Padding="12">
+                    <StackPanel Spacing="4">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="EXAMPLE OUTPUT" FontSize="10" Opacity="0.6" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding PreviewFileName}" FontSize="10" Opacity="0.4"
+                                       FontFamily="Consolas,Courier New,monospace"
+                                       IsVisible="{Binding PreviewFileName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                            <TextBlock Text="(sample data)" FontSize="10" Opacity="0.3" FontStyle="Italic"
+                                       IsVisible="{Binding PreviewFileName, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding PreviewPath}" 
+                                   FontFamily="Consolas,Courier New,monospace"/>
+                    </StackPanel>
+                </suki:GlassCard>
+
+                <!-- Save to Profile: idle state -->
+                <Button Classes="Flat Accent" HorizontalAlignment="Right"
+                        IsVisible="{Binding !IsSavingToProfile}"
+                        Command="{Binding SaveToProfileCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <PathIcon Data="{StaticResource IconSave}" Width="14" Height="14"/>
+                        <TextBlock Text="Save as New Profile" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Save to Profile: name prompt -->
+                <suki:GlassCard IsVisible="{Binding IsSavingToProfile}" Padding="12">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Enter a name for the new profile" FontWeight="SemiBold" FontSize="13"/>
+                        <TextBox Text="{Binding SaveToProfileName}" Watermark="e.g. Vacation Photos"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                            <Button Content="Cancel" Classes="Flat" Command="{Binding CancelSaveToProfileCommand}"/>
+                            <Button Content="Save" Classes="Flat Accent" Command="{Binding ConfirmSaveToProfileCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </suki:GlassCard>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="24">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Job Code {J}" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding JobCode}"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                            <ToggleSwitch IsChecked="{Binding PromptForJobCode}" OnContent="" OffContent=""/>
+                            <TextBlock Text="Prompt for Job code on run" VerticalAlignment="Center" FontSize="12"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="6">
+                        <TextBlock Text="Sequence Start Value" FontWeight="SemiBold"/>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <NumericUpDown Value="{Binding SequenceStart}" Minimum="1"/>
+                            <Button Grid.Column="1" Content="Reset" Classes="Flat"
+                                    Command="{Binding ResetSequenceCommand}"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </suki:GlassCard>
+    </StackPanel>
+</UserControl>

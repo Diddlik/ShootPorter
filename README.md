@@ -1,8 +1,8 @@
-# Phlow
+# ShootPorter
 
 A cross-platform photo and video downloader and organizer for professional photographers.
 
-Phlow transfers images from card readers, cameras (PTP/MTP), and local folders with smart deduplication, token-based dynamic file/folder naming from EXIF/IPTC metadata, GPS sync, and plugin-based post-processing.
+ShootPorter transfers images from card readers, cameras (PTP/MTP), and local folders with smart deduplication, token-based dynamic file/folder naming from EXIF/IPTC metadata, GPS sync, and plugin-based post-processing.
 
 Built with **.NET 10** and **Avalonia UI** — runs on Windows, macOS, and Linux.
 
@@ -66,7 +66,7 @@ Interface-based post-download processing with ordered execution:
 
 ### CLI Mode
 ```
-phlow --source E:\ --dest "C:\Photos" --profile Wedding --jobcode "Smith_2026" --parallel 4 --headless
+shootporter --source E:\ --dest "C:\Photos" --profile Wedding --jobcode "Smith_2026" --parallel 4 --headless
 ```
 
 | Flag | Description |
@@ -113,15 +113,15 @@ Automatic update checking and installation via [Velopack](https://velopack.io/) 
 ## Project Structure
 
 ```
-Phlow_V2/
+ShootPorter_V2/
 ├── src/
-│   ├── Phlow.App/              # Avalonia desktop application
+│   ├── ShootPorter.App/              # Avalonia desktop application
 │   │   ├── Models/             # Data models
 │   │   ├── Services/           # Application services (updates, etc.)
 │   │   ├── ViewModels/         # MVVM ViewModels
 │   │   └── Views/              # AXAML views and settings pages
 │   │
-│   └── Phlow.Core/             # Business logic library
+│   └── ShootPorter.Core/             # Business logic library
 │       ├── Cli/                # Command-line argument parsing
 │       ├── Dedup/              # File deduplication engine
 │       ├── Discovery/          # File system scanning & drive monitoring
@@ -133,7 +133,7 @@ Phlow_V2/
 │       └── Tokens/             # Token template engine
 │
 ├── tests/
-│   └── Phlow.Core.Tests/       # 130 xUnit tests
+│   └── ShootPorter.Core.Tests/       # 130 xUnit tests
 │
 └── Docs/                       # Requirements & design documents
 ```
@@ -149,14 +149,14 @@ Phlow_V2/
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/phlow.git
-cd phlow
+git clone https://github.com/your-username/shootporter.git
+cd shootporter
 
 # Build
 dotnet build
 
 # Run
-dotnet run --project src/Phlow.App
+dotnet run --project src/ShootPorter.App
 
 # Run tests
 dotnet test
@@ -166,10 +166,10 @@ dotnet test
 
 ## Architecture
 
-Phlow follows **strict MVVM** with a clean separation between UI and business logic:
+ShootPorter follows **strict MVVM** with a clean separation between UI and business logic:
 
-- **Phlow.Core** — platform-agnostic library containing all business logic. Zero UI dependencies.
-- **Phlow.App** — thin Avalonia shell that binds ViewModels to Views. Views contain no business logic.
+- **ShootPorter.Core** — platform-agnostic library containing all business logic. Zero UI dependencies.
+- **ShootPorter.App** — thin Avalonia shell that binds ViewModels to Views. Views contain no business logic.
 
 Key design decisions:
 - **Async end-to-end** — no sync-over-async; `CancellationToken` propagated throughout
@@ -181,7 +181,7 @@ Key design decisions:
 
 ## Legacy Context
 
-Phlow is a modern rewrite of **Downloader Pro** by Breeze Systems, a Windows utility used by professional photographers for over a decade. The `_old/` directory contains screenshots and documentation from the original application for feature reference.
+ShootPorter is a modern rewrite of **Downloader Pro** by Breeze Systems, a Windows utility used by professional photographers for over a decade. The `_old/` directory contains screenshots and documentation from the original application for feature reference.
 
 ---
 

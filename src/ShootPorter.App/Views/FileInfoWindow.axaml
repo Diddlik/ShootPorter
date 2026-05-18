@@ -1,0 +1,133 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShootPorter.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+        x:Class="ShootPorter.App.Views.FileInfoWindow"
+        x:DataType="vm:FileInfoViewModel"
+        Title="{Binding FileName, StringFormat='File Info - {0}'}"
+        Width="500" Height="600"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True">
+
+    <Design.DataContext>
+        <vm:FileInfoViewModel/>
+    </Design.DataContext>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="{Binding FileName}" FontSize="18" FontWeight="Bold" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding FilePath}" FontSize="11" Opacity="0.6" TextWrapping="Wrap"
+                       FontFamily="Consolas,Courier New,monospace"/>
+        </StackPanel>
+
+        <!-- Loading indicator -->
+        <StackPanel Grid.Row="1" IsVisible="{Binding IsLoading}" 
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Loading metadata..." FontSize="14" Opacity="0.6"/>
+        </StackPanel>
+
+        <!-- Error message -->
+        <Border Grid.Row="1" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                Background="#fee2e2" CornerRadius="8" Padding="16" VerticalAlignment="Top">
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="#991b1b" TextWrapping="Wrap"/>
+        </Border>
+
+        <!-- Metadata content -->
+        <ScrollViewer Grid.Row="1" IsVisible="{Binding !IsLoading}">
+            <StackPanel Spacing="16">
+                <!-- Camera Section -->
+                <Border Background="#f8fafc" CornerRadius="8" Padding="12">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon Data="{StaticResource IconCamera}" Width="14" Height="14"/>
+                            <TextBlock Text="Camera" FontWeight="SemiBold" FontSize="14"/>
+                        </StackPanel>
+                        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Camera:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CameraInfo, TargetNullValue='-'}"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Serial:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CameraSerial, TargetNullValue='-'}"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Dimensions:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Dimensions, TargetNullValue='-'}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Exposure Section -->
+                <Border Background="#f8fafc" CornerRadius="8" Padding="12">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon Data="{StaticResource IconExposure}" Width="14" Height="14"/>
+                            <TextBlock Text="Exposure" FontWeight="SemiBold" FontSize="14"/>
+                        </StackPanel>
+                        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Date/Time:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CaptureDateTime, TargetNullValue='-'}"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="ISO:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Iso, TargetNullValue='-'}"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Aperture:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Aperture, TargetNullValue='-'}"/>
+                            
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Shutter:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ShutterSpeed, TargetNullValue='-'}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- GPS Section -->
+                <Border Background="#f8fafc" CornerRadius="8" Padding="12">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon Data="{StaticResource IconMapMarker}" Width="14" Height="14"/>
+                            <TextBlock Text="GPS Location" FontWeight="SemiBold" FontSize="14"/>
+                        </StackPanel>
+                        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Coordinates:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding GpsCoordinates, TargetNullValue='-'}"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Altitude:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding GpsAltitude, TargetNullValue='-'}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Copyright Section -->
+                <Border Background="#f8fafc" CornerRadius="8" Padding="12">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon Data="{StaticResource IconCopyright}" Width="14" Height="14"/>
+                            <TextBlock Text="Copyright" FontWeight="SemiBold" FontSize="14"/>
+                        </StackPanel>
+                        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Artist:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Artist, TargetNullValue='-'}"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Copyright:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Copyright, TargetNullValue='-'}" TextWrapping="Wrap"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Keywords:" Opacity="0.6"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Keywords, TargetNullValue='-'}" TextWrapping="Wrap"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Close button -->
+        <Button Grid.Row="2" Content="Close" HorizontalAlignment="Right" Margin="0,16,0,0"
+                Padding="24,8" Click="CloseButton_Click"/>
+    </Grid>
+</Window>

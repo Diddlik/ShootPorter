@@ -1,0 +1,114 @@
+<suki:SukiWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShootPorter.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:suki="using:SukiUI.Controls"
+        xmlns:views="using:ShootPorter.App.Views"
+        mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
+        x:Class="ShootPorter.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="ShootPorter"
+        Icon="avares://ShootPorter/Assets/shootporter-icon.ico"
+        Width="1920" Height="1080"
+        MinWidth="1280" MinHeight="720">
+
+    <suki:SukiWindow.RightWindowTitleBarControls>
+        <Button Classes="Basic" Click="About_Click" ToolTip.Tip="About ShootPorter" Padding="8,4">
+            <PathIcon Data="{StaticResource IconInfo}" Width="16" Height="16"/>
+        </Button>
+        <Button Classes="Basic" Click="ToggleTheme_Click" ToolTip.Tip="Toggle theme" Padding="8,4">
+            <PathIcon Data="{StaticResource IconThemeToggle}" Width="16" Height="16"/>
+        </Button>
+    </suki:SukiWindow.RightWindowTitleBarControls>
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <suki:SukiSideMenu IsMenuExpanded="True">
+        <suki:SukiSideMenu.HeaderContent>
+            <Panel>
+                <StackPanel IsVisible="{Binding $parent[suki:SukiSideMenu].IsMenuExpanded}"
+                            HorizontalAlignment="Center" Margin="12,10,12,8" Spacing="6">
+                    <Image Source="{StaticResource ShootPorterLogo}" Width="80" Height="80" HorizontalAlignment="Center"/>
+                    <TextBlock Text="ShootPorter" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" Margin="0,-20,0,50"/>
+                </StackPanel>
+                <Image IsVisible="{Binding !$parent[suki:SukiSideMenu].IsMenuExpanded}"
+                       Source="{StaticResource ShootPorterLogo}" Width="28" Height="28"
+                       HorizontalAlignment="Center" Margin="0,8"/>
+            </Panel>
+        </suki:SukiSideMenu.HeaderContent>
+        
+        <suki:SukiSideMenu.FooterContent>
+            <views:SourcePickerCard Margin="8"/>
+        </suki:SukiSideMenu.FooterContent>
+
+        <suki:SukiSideMenu.Items>
+            <suki:SukiSideMenuItem Header="Transfer Queue">
+                <suki:SukiSideMenuItem.Icon>
+                    <PathIcon Data="{StaticResource IconDownload}" Width="24" Height="24"/>
+                </suki:SukiSideMenuItem.Icon>
+                <suki:SukiSideMenuItem.PageContent>
+                    <DockPanel>
+                        <suki:GlassCard DockPanel.Dock="Top" Margin="16,16,16,0" Padding="16,12">
+                            <Grid>
+                                <TextBlock Text="Transfer Queue" FontSize="20" FontWeight="SemiBold"
+                                           VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                <StackPanel Orientation="Horizontal" Spacing="16"
+                                            HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="PROFILE" FontSize="11" Opacity="0.6" VerticalAlignment="Center"/>
+                                        <ComboBox ItemsSource="{Binding Profiles}" 
+                                                  SelectedItem="{Binding SelectedProfile}" MinWidth="140">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Name}"/>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <suki:GlassCard Padding="10,6" IsVisible="{Binding HasConflicts}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <PathIcon Data="{StaticResource IconWarning}" Width="14" Height="14" Foreground="#f59e0b"/>
+                                            <TextBlock Text="{Binding ConflictCount, StringFormat='{}{0} Conflicts'}" 
+                                                       Foreground="#f59e0b" FontSize="13"/>
+                                        </StackPanel>
+                                    </suki:GlassCard>
+                                    <Button Classes="Flat" Command="{Binding RunCustomActionCommand}"
+                                            IsVisible="{Binding ShowCustomButton}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Data="{StaticResource IconSettings}" Width="12" Height="12"/>
+                                            <TextBlock Text="{Binding CustomButtonCaption}" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="Flat Accent" Command="{Binding StartDownloadCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Data="{StaticResource IconPlay}" Width="12" Height="12"/>
+                                            <TextBlock Text="Start Download" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </suki:GlassCard>
+                        <views:TransferQueueView Margin="16" DataContext="{Binding TransferQueueViewModel}"/>
+                    </DockPanel>
+                </suki:SukiSideMenuItem.PageContent>
+            </suki:SukiSideMenuItem>
+            
+            <suki:SukiSideMenuItem Header="Preferences">
+                <suki:SukiSideMenuItem.Icon>
+                    <PathIcon Data="{StaticResource IconSettings}" Width="24" Height="24"/>
+                </suki:SukiSideMenuItem.Icon>
+                <suki:SukiSideMenuItem.PageContent>
+                    <DockPanel>
+                        <suki:GlassCard DockPanel.Dock="Top" Margin="16,16,16,0" Padding="16,12">
+                            <TextBlock Text="Preferences" FontSize="20" FontWeight="SemiBold"/>
+                        </suki:GlassCard>
+                        <views:SettingsView Margin="16" DataContext="{Binding SettingsViewModel}"/>
+                    </DockPanel>
+                </suki:SukiSideMenuItem.PageContent>
+            </suki:SukiSideMenuItem>
+        </suki:SukiSideMenu.Items>
+    </suki:SukiSideMenu>
+</suki:SukiWindow>

@@ -9,8 +9,8 @@ permissions:
   contents: write
 
 env:
-  APP_NAME: Phlow
-  PROJECT_PATH: src/Phlow.App/Phlow.App.csproj
+  APP_NAME: ShootPorter
+  PROJECT_PATH: src/ShootPorter.App/ShootPorter.App.csproj
   PUBLISH_DIR: publish
   RELEASES_DIR: releases
 
@@ -61,7 +61,7 @@ jobs:
           --packDir ${{ env.PUBLISH_DIR }}
           --mainExe ${{ env.APP_NAME }}.exe
           --packTitle "${{ env.APP_NAME }}"
-          --icon src/Phlow.App/Assets/phlow-icon.ico
+          --icon src/ShootPorter.App/Assets/shootporter-icon.ico
           --outputDir ${{ env.RELEASES_DIR }}
 
       - name: Create GitHub Release

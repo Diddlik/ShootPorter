@@ -1,0 +1,75 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ShootPorter.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:suki="using:SukiUI.Controls"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+             x:Class="ShootPorter.App.Views.Settings.ManageProfilesSettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <StackPanel Spacing="16">
+        <Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+                <TextBlock Text="Manage Profiles" FontSize="20" FontWeight="SemiBold"/>
+                <TextBlock Text="Create and switch between different download configurations." Opacity="0.6" FontSize="13"/>
+            </StackPanel>
+            <Button Grid.Column="1" Classes="Flat Accent" Command="{Binding NewProfileCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="+" FontSize="14"/>
+                    <TextBlock Text="New Profile" FontWeight="SemiBold"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <ItemsControl ItemsSource="{Binding Profiles}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:ProfileItem">
+                    <suki:GlassCard Margin="0,0,0,12">
+                        <StackPanel Spacing="8">
+                            <!-- Read-only display -->
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding !IsEditing}">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Path}" FontSize="12" Opacity="0.6"
+                                               FontFamily="Consolas,Courier New,monospace"/>
+                                    <TextBlock Text="{Binding NamingTemplate}" FontSize="11" Opacity="0.4"
+                                               FontFamily="Consolas,Courier New,monospace" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                                            VerticalAlignment="Center">
+                                    <Button Content="Select" Classes="Flat" Command="{Binding SelectCommand}"/>
+                                    <Button Content="Edit" Classes="Flat" Command="{Binding EditCommand}"/>
+                                    <Button Content="Delete" Classes="Flat" Command="{Binding DeleteCommand}"
+                                            IsEnabled="{Binding CanDelete}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Editing form -->
+                            <StackPanel Spacing="10" IsVisible="{Binding IsEditing}">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Profile Name" FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBox Text="{Binding Name}" Watermark="My Profile"/>
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Download Path" FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBox Text="{Binding Path}" Watermark="C:\Photos\"
+                                             FontFamily="Consolas,Courier New,monospace"/>
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Naming Template" FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBox Text="{Binding NamingTemplate}" Watermark="{}{Y}{m}{D}_{o}"
+                                             FontFamily="Consolas,Courier New,monospace"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                                    <Button Content="Cancel" Classes="Flat" Command="{Binding CancelEditCommand}"/>
+                                    <Button Content="Save" Classes="Flat Accent" Command="{Binding SaveEditCommand}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </suki:GlassCard>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

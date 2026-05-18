@@ -1,0 +1,91 @@
+<suki:SukiWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShootPorter.App.ViewModels"
+        xmlns:suki="using:SukiUI.Controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="ShootPorter.App.Views.AboutWindow"
+        x:DataType="vm:AboutViewModel"
+        Title="About ShootPorter"
+        Width="460" Height="480"
+        CanMinimize="False" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32" Spacing="20">
+
+            <!-- App Logo -->
+            <Image Source="{StaticResource ShootPorterLogo}"
+                   Width="80" Height="80"
+                   HorizontalAlignment="Center"/>
+
+            <!-- App Name & Version -->
+            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                <TextBlock Text="ShootPorter" FontSize="24" FontWeight="Bold"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding AppVersion, StringFormat='Version {0}'}"
+                           FontSize="13" Opacity="0.6" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding DotNetVersion}"
+                           FontSize="11" Opacity="0.4" HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Description -->
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Opacity="0.8" FontSize="13"
+                       Text="A cross-platform photo and video downloader and organizer for professional photographers. Transfer, rename, and organize files from card readers and cameras with smart deduplication and metadata-driven naming."/>
+
+            <suki:GlassCard Padding="14,12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Current Build" FontSize="13" FontWeight="SemiBold"/>
+                    <ItemsControl ItemsSource="{Binding ReleaseHighlights}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,1">
+                                    <TextBlock Text="-" Opacity="0.55"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding}" FontSize="11"
+                                               Opacity="0.72" TextWrapping="Wrap"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </suki:GlassCard>
+
+            <Separator Opacity="0.2"/>
+
+            <!-- Credits Section (Collapsible) -->
+            <Expander IsExpanded="{Binding IsCreditsExpanded}">
+                <Expander.Header>
+                    <TextBlock Text="Credits &amp; Open Source Packages" FontSize="13" FontWeight="SemiBold"/>
+                </Expander.Header>
+                <ItemsControl ItemsSource="{Binding Credits}" Margin="0,8,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CreditEntry">
+                            <suki:GlassCard Margin="0,0,0,6" Padding="12,10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="2">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Text="{Binding Version}" Opacity="0.5" FontSize="11"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Description}" Opacity="0.6" FontSize="11"
+                                                   TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="↗" FontSize="14" Opacity="0.4"
+                                               VerticalAlignment="Center" Margin="8,0,0,0"
+                                               ToolTip.Tip="{Binding Url}"/>
+                                </Grid>
+                            </suki:GlassCard>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Expander>
+
+            <!-- Close Button -->
+            <Button Content="Close" Classes="Flat" HorizontalAlignment="Center"
+                    Padding="24,8" Click="Close_Click"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</suki:SukiWindow>

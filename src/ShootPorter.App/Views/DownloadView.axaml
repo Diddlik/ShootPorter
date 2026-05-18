@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ShootPorter.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="ShootPorter.App.Views.DownloadView"
+             x:DataType="vm:DownloadViewModel">
+
+    <DockPanel Margin="20">
+        <TextBlock DockPanel.Dock="Top" Text="Download Progress" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,20" />
+
+        <!-- Action buttons -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">
+            <Button Content="Start Download"
+                    Command="{Binding StartDownloadCommand}"
+                    CommandParameter="{x:Null}"
+                    IsEnabled="{Binding !IsDownloading}" />
+            <Button Content="Cancel"
+                    Command="{Binding StartDownloadCancelCommand}"
+                    IsVisible="{Binding IsDownloading}" />
+        </StackPanel>
+
+        <!-- Overall progress -->
+        <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0,0,0,20">
+            <TextBlock Text="{Binding StatusText}" />
+            <ProgressBar Value="{Binding OverallProgress}" Maximum="1.0" Height="24" />
+            <StackPanel Orientation="Horizontal" Spacing="20">
+                <TextBlock>
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Files: {0} / {1}">
+                            <Binding Path="CompletedFiles" />
+                            <Binding Path="TotalFiles" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock Text="{Binding FailedFiles, StringFormat='Failed: {0}'}" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Current file progress -->
+        <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,20">
+            <TextBlock Text="{Binding CurrentFile}" Opacity="0.7" />
+            <ProgressBar Value="{Binding CurrentFileProgress}" Maximum="1.0" Height="8" />
+        </StackPanel>
+
+        <!-- Log -->
+        <ListBox ItemsSource="{Binding Log}" />
+    </DockPanel>
+</UserControl>
