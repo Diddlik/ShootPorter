@@ -77,6 +77,12 @@ public sealed record AppSettings
     [JsonPropertyName("autoDeleteSource")]
     public bool AutoDeleteSource { get; init; }
 
+    [JsonPropertyName("selectedSourcePath")]
+    public string SelectedSourcePath { get; init; } = string.Empty;
+
+    [JsonPropertyName("recentSourcePaths")]
+    public IReadOnlyList<string> RecentSourcePaths { get; init; } = [];
+
     // Profiles
     [JsonPropertyName("profiles")]
     public IReadOnlyList<SavedProfile> Profiles { get; init; } = [];

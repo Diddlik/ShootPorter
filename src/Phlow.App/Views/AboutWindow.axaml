@@ -34,6 +34,23 @@
             <TextBlock TextWrapping="Wrap" TextAlignment="Center" Opacity="0.8" FontSize="13"
                        Text="A cross-platform photo and video downloader and organizer for professional photographers. Transfer, rename, and organize files from card readers and cameras with smart deduplication and metadata-driven naming."/>
 
+            <suki:GlassCard Padding="14,12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Current Build" FontSize="13" FontWeight="SemiBold"/>
+                    <ItemsControl ItemsSource="{Binding ReleaseHighlights}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,1">
+                                    <TextBlock Text="-" Opacity="0.55"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding}" FontSize="11"
+                                               Opacity="0.72" TextWrapping="Wrap"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </suki:GlassCard>
+
             <Separator Opacity="0.2"/>
 
             <!-- Credits Section (Collapsible) -->

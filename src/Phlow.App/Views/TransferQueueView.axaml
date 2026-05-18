@@ -112,19 +112,41 @@
 
         <!-- Search Bar - Compact -->
         <suki:GlassCard Grid.Row="2" Margin="0,0,0,12">
-            <Grid ColumnDefinitions="Auto,*,Auto">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <PathIcon Data="{StaticResource IconSearch}" Width="12" Height="12" VerticalAlignment="Center"/>
                     <TextBox Text="{Binding SearchText}" Watermark="Search files..." 
                              Width="200" FontSize="12"/>
                 </StackPanel>
                 
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6">
-                    <TextBlock Text="Filter:" Opacity="0.6" VerticalAlignment="Center" FontSize="12"/>
-                    <ComboBox ItemsSource="{Binding FilterOptions}" 
-                              SelectedItem="{Binding SelectedFilter}"
-                              MinWidth="100" FontSize="12"/>
-                </StackPanel>
+                <ScrollViewer Grid.Column="2"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding FilterChips}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:TransferFilterChip">
+                                <Button Command="{Binding SelectCommand}"
+                                        Padding="10,5"
+                                        MinHeight="28"
+                                        Background="{Binding Background}"
+                                        BorderBrush="{Binding BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="14"
+                                        ToolTip.Tip="{Binding Label}">
+                                    <TextBlock Text="{Binding DisplayText}"
+                                               Foreground="{Binding Foreground}"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </Grid>
         </suki:GlassCard>
 
@@ -140,6 +162,18 @@
                       BorderThickness="0"
                       x:Name="FilesDataGrid"
                       DoubleTapped="FilesDataGrid_DoubleTapped">
+                <DataGrid.Styles>
+                    <Style Selector="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#182233"/>
+                        <Setter Property="Foreground" Value="#e5edf8"/>
+                        <Setter Property="BorderBrush" Value="#2c384b"/>
+                        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="MinHeight" Value="34"/>
+                        <Setter Property="Padding" Value="8,0"/>
+                    </Style>
+                </DataGrid.Styles>
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="☑" Width="40">
                         <DataGridTemplateColumn.CellTemplate>
@@ -150,7 +184,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="File Name" Width="*">
+                    <DataGridTemplateColumn Header="File Name" Width="1.1*" MinWidth="140" MaxWidth="230">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="6" Margin="6,0">
@@ -196,7 +230,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="Download Path" Width="*">
+                    <DataGridTemplateColumn Header="Download Path" Width="2.2*" MinWidth="240">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding DestinationPreview}" 
@@ -208,7 +242,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="Source Path" Width="200">
+                    <DataGridTemplateColumn Header="Source Path" Width="1.7*" MinWidth="220">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding SourcePath}" 

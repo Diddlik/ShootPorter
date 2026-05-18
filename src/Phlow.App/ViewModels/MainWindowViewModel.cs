@@ -24,6 +24,7 @@ namespace Phlow.App.ViewModels;
 /// </summary>
 public partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
+    private const int MaxRecentSourcePaths = 5;
     private readonly DriveWatcherService _driveWatcher = new();
     private readonly FileSystemScanner _scanner = new();
     private readonly IMetadataReader _metadataReader = new MetadataReader();
@@ -57,6 +58,15 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private string _fileCountStatus = string.Empty;
 
     [ObservableProperty]
+    private bool _isSourceScanning;
+
+    [ObservableProperty]
+    private bool _sourceFolderExists = true;
+
+    [ObservableProperty]
+    private int _detectedFileCount;
+
+    [ObservableProperty]
     private InputSourceItem? _selectedInputSource;
 
     [ObservableProperty]
@@ -72,9 +82,39 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     public SettingsViewModel SettingsViewModel => _settingsViewModel;
 
     public ObservableCollection<InputSourceItem> InputSources { get; } = [];
+    public ObservableCollection<string> RecentSourcePaths { get; } = [];
     public ObservableCollection<ProfileItem> Profiles => _settingsViewModel.Profiles;
 
     public bool HasConflicts => ConflictCount > 0;
+    public bool HasSelectedSourcePath => !string.IsNullOrWhiteSpace(SelectedSourcePath);
+    public bool HasRecentSourcePaths => RecentSourcePaths.Count > 0;
+    public string SelectedSourcePath => SelectedInputSource?.Path ?? string.Empty;
+    public string SourceStatusText
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(SelectedSourcePath))
+                return "Select a folder to detect media files";
+
+            if (!SourceFolderExists)
+                return "Folder not found";
+
+            if (IsSourceScanning)
+                return "Scanning folder...";
+
+            return DetectedFileCount switch
+            {
+                0 => "No media files detected",
+                1 => "1 file detected",
+                _ => $"{DetectedFileCount} files detected"
+            };
+        }
+    }
+
+    public string DisplaySourcePath =>
+        string.IsNullOrWhiteSpace(SelectedSourcePath)
+            ? "No folder selected"
+            : ShortenPath(SelectedSourcePath);
 
     /// <summary>
     /// Callback set by the view layer to display the update dialog with a given ViewModel.
@@ -115,6 +155,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                     SelectedProfile = _settingsViewModel.SelectedProfile;
                 else if (Profiles.Count > 0)
                     SelectedProfile = Profiles[0];
+
+                LoadSourceHistory();
             });
         }
         catch
@@ -155,12 +197,35 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         {
             DeviceStatus = "No source selected";
             FileCountStatus = string.Empty;
+            DetectedFileCount = 0;
+            SourceFolderExists = true;
+            IsSourceScanning = false;
+            NotifySourcePickerChanged();
             return;
         }
 
         DeviceStatus = value.DisplayName;
         FileCountStatus = "Scanning...";
+        DetectedFileCount = 0;
+        SourceFolderExists = Directory.Exists(value.Path);
+        PersistSourceHistory(value.Path);
+        NotifySourcePickerChanged();
         _ = ScanSelectedSourceAsync();
+    }
+
+    partial void OnIsSourceScanningChanged(bool value)
+    {
+        OnPropertyChanged(nameof(SourceStatusText));
+    }
+
+    partial void OnSourceFolderExistsChanged(bool value)
+    {
+        OnPropertyChanged(nameof(SourceStatusText));
+    }
+
+    partial void OnDetectedFileCountChanged(int value)
+    {
+        OnPropertyChanged(nameof(SourceStatusText));
     }
 
     partial void OnConflictCountChanged(int value)
@@ -194,11 +259,6 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     {
         var currentPath = SelectedInputSource?.Path;
 
-        var removableBefore = InputSources
-            .Where(s => s.IsRemovable)
-            .Select(s => s.Path)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
         foreach (var old in InputSources.Where(s => s.IsRemovable).ToList())
         {
             InputSources.Remove(old);
@@ -207,19 +267,41 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         try
         {
             var drives = DriveInfo.GetDrives()
-                .Where(d => d.DriveType == DriveType.Removable && d.IsReady);
+                .Where(d => d.IsReady);
+
+            if (_settingsViewModel.IsCameraUsb)
+            {
+                // Camera USB mode: only show removable drives with a DCIM folder (camera convention)
+                drives = drives.Where(d =>
+                    d.DriveType == DriveType.Removable &&
+                    Directory.Exists(Path.Combine(d.Name, "DCIM")));
+            }
+            else if (_settingsViewModel.IsCardReader)
+            {
+                // Card reader mode: all removable drives
+                drives = drives.Where(d => d.DriveType == DriveType.Removable);
+            }
+            else
+            {
+                // Auto-detect mode: removable drives + fixed drives with DCIM folder
+                drives = drives.Where(d =>
+                    d.DriveType == DriveType.Removable ||
+                    (d.DriveType == DriveType.Fixed && Directory.Exists(Path.Combine(d.Name, "DCIM"))));
+            }
 
             foreach (var drive in drives)
             {
+                var hasDcim = Directory.Exists(Path.Combine(drive.Name, "DCIM"));
                 var label = string.IsNullOrWhiteSpace(drive.VolumeLabel)
                     ? "Removable Disk"
                     : drive.VolumeLabel;
+                var icon = hasDcim ? "📷" : "💾";
 
                 InputSources.Add(new InputSourceItem
                 {
                     Path = drive.Name,
                     DisplayName = $"{label} ({drive.Name.TrimEnd('\\')})",
-                    Icon = "💾",
+                    Icon = icon,
                     IsRemovable = true,
                     TotalSizeBytes = drive.TotalSize,
                     AvailableSizeBytes = drive.AvailableFreeSpace,
@@ -234,7 +316,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (currentPath is not null)
         {
             SelectedInputSource = InputSources.FirstOrDefault(
-                s => s.Path.Equals(currentPath, StringComparison.OrdinalIgnoreCase));
+                                  s => s.Path.Equals(currentPath, StringComparison.OrdinalIgnoreCase))
+                                  ?? SelectedInputSource;
         }
 
         if (SelectedInputSource is null && InputSources.Count > 0)
@@ -248,25 +331,65 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
             return;
 
+        SelectSourcePath(folderPath, addToRecent: true);
+    }
+
+    public void SelectRecentSource(string folderPath)
+    {
+        if (string.IsNullOrWhiteSpace(folderPath))
+            return;
+
+        SelectSourcePath(folderPath, addToRecent: true);
+    }
+
+    private void SelectSourcePath(string folderPath, bool addToRecent)
+    {
         var existing = InputSources.FirstOrDefault(
             s => s.Path.Equals(folderPath, StringComparison.OrdinalIgnoreCase));
+        var sourceWasAlreadySelected = existing is not null && existing == SelectedInputSource;
 
         if (existing is not null)
         {
             SelectedInputSource = existing;
+        }
+        else
+        {
+            var item = new InputSourceItem
+            {
+                Path = folderPath,
+                DisplayName = GetSourceDisplayName(folderPath),
+                Icon = "📁",
+                IsRemovable = false,
+            };
+
+            InputSources.Add(item);
+            SelectedInputSource = item;
+        }
+
+        if (addToRecent)
+            AddRecentSourcePath(folderPath);
+
+        if (sourceWasAlreadySelected)
+            RescanSource();
+    }
+
+    [RelayCommand]
+    private void RescanSource()
+    {
+        if (string.IsNullOrWhiteSpace(SelectedSourcePath))
+            return;
+
+        SourceFolderExists = Directory.Exists(SelectedSourcePath);
+        if (!SourceFolderExists)
+        {
+            DetectedFileCount = 0;
+            _transferQueueViewModel.ClearFiles();
+            NotifySourcePickerChanged();
             return;
         }
 
-        var item = new InputSourceItem
-        {
-            Path = folderPath,
-            DisplayName = $"📁 {Path.GetFileName(folderPath.TrimEnd(Path.DirectorySeparatorChar))}",
-            Icon = "📁",
-            IsRemovable = false,
-        };
-
-        InputSources.Add(item);
-        SelectedInputSource = item;
+        FileCountStatus = "Scanning...";
+        _ = ScanSelectedSourceAsync();
     }
 
     private async Task ScanSelectedSourceAsync()
@@ -280,6 +403,25 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             return;
 
         _transferQueueViewModel.ClearFiles();
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            IsSourceScanning = true;
+            SourceFolderExists = Directory.Exists(path);
+            DetectedFileCount = 0;
+            NotifySourcePickerChanged();
+        });
+
+        if (!Directory.Exists(path))
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                IsSourceScanning = false;
+                SourceFolderExists = false;
+                FileCountStatus = "Folder not found";
+                NotifySourcePickerChanged();
+            });
+            return;
+        }
 
         var profile = SelectedProfile;
         var destRoot = profile?.Path ?? _settingsViewModel.DestinationRoot;
@@ -308,6 +450,16 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                     ? Path.GetFileName(dir)
                     : string.Empty;
 
+                // Update detected camera from the first file with camera info
+                if (count == 0 && metadata?.CameraModel is not null)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                        _settingsViewModel.UpdateDetectedCamera(metadata.CameraModel, metadata.CameraSerialNumber));
+                }
+
+                var cameraMappings = _settingsViewModel.BuildCameraMappingsDictionary(
+                    metadata?.CameraModel, metadata?.CameraSerialNumber);
+
                 var context = new TokenContext(
                     CaptureDateTime: captureDateOffset,
                     OriginalFileName: originalFileName,
@@ -327,6 +479,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                     ShutterSpeed = metadata?.ShutterSpeed,
                     Copyright = metadata?.Copyright,
                     Owner = metadata?.Artist,
+                    CameraMappings = cameraMappings,
                 };
 
                 var generatedName = _tokenParser.Parse(namingTemplate, context);
@@ -358,7 +511,11 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             {
                 _transferQueueViewModel.RebuildDateGroups();
                 RecomputeDestinationPreviews();
+                DetectedFileCount = count;
                 FileCountStatus = $"{count} files detected";
+                IsSourceScanning = false;
+                SourceFolderExists = true;
+                NotifySourcePickerChanged();
             });
 
             if (_transferQueueViewModel.Files.Count > 0)
@@ -373,8 +530,97 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         }
         catch (DirectoryNotFoundException)
         {
-            await Dispatcher.UIThread.InvokeAsync(() => FileCountStatus = "Directory not found");
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                IsSourceScanning = false;
+                SourceFolderExists = false;
+                DetectedFileCount = 0;
+                FileCountStatus = "Folder not found";
+                NotifySourcePickerChanged();
+            });
         }
+    }
+
+    private void LoadSourceHistory()
+    {
+        RecentSourcePaths.Clear();
+        foreach (var path in _settingsViewModel.RecentSourcePaths.Where(Directory.Exists).Take(MaxRecentSourcePaths))
+        {
+            RecentSourcePaths.Add(path);
+        }
+
+        OnPropertyChanged(nameof(HasRecentSourcePaths));
+
+        var selectedSourcePath = _settingsViewModel.SelectedSourcePath;
+        if (!string.IsNullOrWhiteSpace(selectedSourcePath))
+        {
+            SelectSourcePath(selectedSourcePath, addToRecent: false);
+            return;
+        }
+
+        NotifySourcePickerChanged();
+    }
+
+    private void AddRecentSourcePath(string folderPath)
+    {
+        if (!Directory.Exists(folderPath))
+            return;
+
+        var existing = RecentSourcePaths.FirstOrDefault(
+            p => p.Equals(folderPath, StringComparison.OrdinalIgnoreCase));
+        if (existing is not null)
+            RecentSourcePaths.Remove(existing);
+
+        RecentSourcePaths.Insert(0, folderPath);
+        while (RecentSourcePaths.Count > MaxRecentSourcePaths)
+            RecentSourcePaths.RemoveAt(RecentSourcePaths.Count - 1);
+
+        OnPropertyChanged(nameof(HasRecentSourcePaths));
+        PersistSourceHistory(folderPath);
+    }
+
+    private void PersistSourceHistory(string selectedPath)
+    {
+        _settingsViewModel.SetSourceHistory(
+            selectedPath,
+            RecentSourcePaths.Where(Directory.Exists).Take(MaxRecentSourcePaths));
+    }
+
+    private void NotifySourcePickerChanged()
+    {
+        OnPropertyChanged(nameof(SelectedSourcePath));
+        OnPropertyChanged(nameof(DisplaySourcePath));
+        OnPropertyChanged(nameof(SourceStatusText));
+        OnPropertyChanged(nameof(HasSelectedSourcePath));
+        RescanSourceCommand.NotifyCanExecuteChanged();
+    }
+
+    private static string GetSourceDisplayName(string folderPath)
+    {
+        var trimmed = folderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var name = Path.GetFileName(trimmed);
+        return string.IsNullOrWhiteSpace(name) ? folderPath : name;
+    }
+
+    private static string ShortenPath(string path)
+    {
+        const int maxLength = 34;
+        if (path.Length <= maxLength)
+            return path;
+
+        var root = Path.GetPathRoot(path) ?? string.Empty;
+        var trimmed = path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var leaf = Path.GetFileName(trimmed);
+        var parent = Path.GetDirectoryName(trimmed);
+        var parentName = string.IsNullOrWhiteSpace(parent)
+            ? string.Empty
+            : Path.GetFileName(parent.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+
+        var result = string.IsNullOrWhiteSpace(parentName)
+            ? $"{root}...\\{leaf}"
+            : $"{root}{parentName}\\...\\{leaf}";
+
+        return result.Length <= maxLength ? result : $"{path[..Math.Min(24, path.Length)]}...";
     }
 
     private void RecomputeDestinationPreviews()
@@ -392,6 +638,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             var captureDateOffset = new DateTimeOffset(file.CaptureDate);
             var originalFileName = Path.GetFileNameWithoutExtension(file.FileName);
             var meta = file.Metadata;
+
+            var cameraMappings = _settingsViewModel.BuildCameraMappingsDictionary(
+                meta?.CameraModel, meta?.CameraSerialNumber);
 
             var context = new TokenContext(
                 CaptureDateTime: captureDateOffset,
@@ -412,6 +661,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 ShutterSpeed = meta?.ShutterSpeed,
                 Copyright = meta?.Copyright,
                 Owner = meta?.Artist,
+                CameraMappings = cameraMappings,
             };
 
             var generatedName = _tokenParser.Parse(namingTemplate, context);
@@ -460,6 +710,20 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                                  or nameof(SettingsViewModel.DestinationTemplate))
         {
             RecomputeDestinationPreviews();
+        }
+        else if (e.PropertyName is nameof(SettingsViewModel.EnableCustomButton))
+        {
+            OnPropertyChanged(nameof(ShowCustomButton));
+        }
+        else if (e.PropertyName is nameof(SettingsViewModel.CustomButtonCaption))
+        {
+            OnPropertyChanged(nameof(CustomButtonCaption));
+        }
+        else if (e.PropertyName is nameof(SettingsViewModel.IsAutoDetect)
+                                 or nameof(SettingsViewModel.IsCameraUsb)
+                                 or nameof(SettingsViewModel.IsCardReader))
+        {
+            RefreshDrives();
         }
     }
 
@@ -614,6 +878,65 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             _transferQueueViewModel.IsDownloadActive = false;
         }
     }
+
+    [RelayCommand]
+    private async Task RunCustomActionAsync()
+    {
+        if (!_settingsViewModel.EnableCustomButton)
+            return;
+
+        var scriptPath = _settingsViewModel.CustomScriptPath;
+        if (string.IsNullOrWhiteSpace(scriptPath) || !File.Exists(scriptPath))
+            return;
+
+        var completedFiles = _transferQueueViewModel.AllFiles
+            .Where(f => f.Status == FileTransferStatus.Completed)
+            .ToList();
+
+        if (completedFiles.Count == 0)
+            return;
+
+        foreach (var file in completedFiles)
+        {
+            var filePath = file.DestinationPreview;
+            var directory = Path.GetDirectoryName(filePath) ?? string.Empty;
+
+            var arguments = $"\"{filePath}\" \"{directory}\"";
+
+            try
+            {
+                using var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = scriptPath,
+                        Arguments = arguments,
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    },
+                };
+
+                process.Start();
+                await process.WaitForExitAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                // Script execution failure is non-fatal per file
+            }
+        }
+    }
+
+    /// <summary>
+    /// Whether the custom action button should be visible in the transfer queue header.
+    /// </summary>
+    public bool ShowCustomButton => _settingsViewModel.EnableCustomButton;
+
+    /// <summary>
+    /// The caption for the custom action button, sourced from settings.
+    /// </summary>
+    public string CustomButtonCaption => _settingsViewModel.CustomButtonCaption;
 
     private static string FormatSpeed(double bytesPerSecond) => bytesPerSecond switch
     {

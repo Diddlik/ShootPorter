@@ -146,9 +146,13 @@ public partial class SettingsViewModel : ViewModelBase
     [ObservableProperty]
     private bool _autoDeleteSource;
 
+    [ObservableProperty]
+    private string _selectedSourcePath = string.Empty;
+
     public ObservableCollection<ProfileItem> Profiles { get; } = [];
     public ObservableCollection<TokenInfo> Tokens { get; } = [];
     public ObservableCollection<CameraMappingItem> CameraMappings { get; } = [];
+    public ObservableCollection<string> RecentSourcePaths { get; } = [];
 
     public bool IsDownloadPathTab => CurrentTab == "DownloadPath";
     public bool IsGeneralTab => CurrentTab == "General";
@@ -218,6 +222,7 @@ public partial class SettingsViewModel : ViewModelBase
     partial void OnMaxParallelismChanged(int value) => ScheduleSave();
     partial void OnVerifyAfterCopyChanged(bool value) => ScheduleSave();
     partial void OnAutoDeleteSourceChanged(bool value) => ScheduleSave();
+    partial void OnSelectedSourcePathChanged(string value) => ScheduleSave();
 
     partial void OnSelectedProfileChanged(ProfileItem? value)
     {
@@ -261,6 +266,8 @@ public partial class SettingsViewModel : ViewModelBase
                 ? Path.GetFileName(dir)
                 : string.Empty;
 
+            var cameraMappings = BuildCameraMappingsDictionary(meta?.CameraModel, meta?.CameraSerialNumber);
+
             var context = new TokenContext(
                 CaptureDateTime: captureDateTime,
                 OriginalFileName: originalFileName,
@@ -280,6 +287,7 @@ public partial class SettingsViewModel : ViewModelBase
                 ShutterSpeed = meta?.ShutterSpeed,
                 Copyright = meta?.Copyright,
                 Owner = meta?.Artist,
+                CameraMappings = cameraMappings,
             };
 
             var generatedName = _tokenParser.Parse(DestinationTemplate, context);
@@ -477,6 +485,12 @@ public partial class SettingsViewModel : ViewModelBase
             MaxParallelism = settings.MaxParallelism;
             VerifyAfterCopy = settings.VerifyAfterCopy;
             AutoDeleteSource = settings.AutoDeleteSource;
+            SelectedSourcePath = settings.SelectedSourcePath;
+            RecentSourcePaths.Clear();
+            foreach (var path in settings.RecentSourcePaths.Where(p => !string.IsNullOrWhiteSpace(p)).Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                RecentSourcePaths.Add(path);
+            }
 
             if (settings.Profiles.Count > 0)
             {
@@ -499,7 +513,7 @@ public partial class SettingsViewModel : ViewModelBase
                 CameraMappings.Clear();
                 foreach (var saved in settings.CameraMappings)
                 {
-                    CameraMappings.Add(new CameraMappingItem
+                    CameraMappings.Add(new CameraMappingItem(RemoveCameraMapping)
                     {
                         CameraModel = saved.CameraModel,
                         T8Value = saved.T8Value,
@@ -542,6 +556,8 @@ public partial class SettingsViewModel : ViewModelBase
         MaxParallelism = MaxParallelism,
         VerifyAfterCopy = VerifyAfterCopy,
         AutoDeleteSource = AutoDeleteSource,
+        SelectedSourcePath = SelectedSourcePath,
+        RecentSourcePaths = RecentSourcePaths.ToList(),
         SelectedProfileName = SelectedProfile?.Name ?? string.Empty,
         Profiles = Profiles.Select(p => new SavedProfile
         {
@@ -585,6 +601,19 @@ public partial class SettingsViewModel : ViewModelBase
     {
         _saveCts?.Cancel();
         await _settingsStore.SaveAsync(CaptureSettings()).ConfigureAwait(false);
+    }
+
+    public void SetSourceHistory(string selectedSourcePath, IEnumerable<string> recentSourcePaths)
+    {
+        SelectedSourcePath = selectedSourcePath;
+
+        RecentSourcePaths.Clear();
+        foreach (var path in recentSourcePaths.Where(p => !string.IsNullOrWhiteSpace(p)).Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            RecentSourcePaths.Add(path);
+        }
+
+        ScheduleSave();
     }
 
     private void LoadTokens()
@@ -636,9 +665,82 @@ public partial class SettingsViewModel : ViewModelBase
         Tokens.Add(new TokenInfo("{R}", "Daily count"));
     }
 
+    [RelayCommand]
+    private void AddCameraMapping()
+    {
+        if (string.IsNullOrWhiteSpace(DetectedCamera))
+            return;
+
+        var existing = CameraMappings.FirstOrDefault(
+            m => m.CameraModel.Equals(DetectedCamera, StringComparison.OrdinalIgnoreCase));
+
+        if (existing is not null)
+            return;
+
+        CameraMappings.Add(new CameraMappingItem(RemoveCameraMapping)
+        {
+            CameraModel = DetectedCamera,
+            T8Value = DetectedCamera,
+            T9Value = DetectedCamera
+        });
+
+        ScheduleSave();
+    }
+
+    private void RemoveCameraMapping(CameraMappingItem mapping)
+    {
+        CameraMappings.Remove(mapping);
+        ScheduleSave();
+    }
+
+    /// <summary>
+    /// Updates the detected camera display from EXIF metadata of scanned files.
+    /// </summary>
+    public void UpdateDetectedCamera(string? cameraModel, string? serialNumber)
+    {
+        if (IdentifyCameraBySerial && !string.IsNullOrWhiteSpace(serialNumber))
+        {
+            DetectedCamera = $"{cameraModel} ({serialNumber})";
+        }
+        else if (!string.IsNullOrWhiteSpace(cameraModel))
+        {
+            DetectedCamera = cameraModel;
+        }
+    }
+
+    /// <summary>
+    /// Builds a camera mappings dictionary for token resolution from the current mapping entries.
+    /// Matches the given camera identifier against stored mappings.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> BuildCameraMappingsDictionary(string? cameraModel, string? serialNumber)
+    {
+        var result = new Dictionary<string, string>();
+
+        if (CameraMappings.Count == 0)
+            return result;
+
+        var identifier = IdentifyCameraBySerial && !string.IsNullOrWhiteSpace(serialNumber)
+            ? $"{cameraModel} ({serialNumber})"
+            : cameraModel;
+
+        if (string.IsNullOrWhiteSpace(identifier))
+            return result;
+
+        var match = CameraMappings.FirstOrDefault(
+            m => m.CameraModel.Equals(identifier, StringComparison.OrdinalIgnoreCase));
+
+        if (match is not null)
+        {
+            result["T8"] = match.T8Value;
+            result["T9"] = match.T9Value;
+        }
+
+        return result;
+    }
+
     private void LoadCameraMappings()
     {
-        CameraMappings.Add(new CameraMappingItem
+        CameraMappings.Add(new CameraMappingItem(RemoveCameraMapping)
         {
             CameraModel = "Default mapping",
             T8Value = "{T1}",
@@ -731,12 +833,36 @@ public partial class ProfileItem : ObservableObject
 
 public record TokenInfo(string Token, string Description);
 
-public class CameraMappingItem
+/// <summary>
+/// Represents a single camera-to-token mapping entry in the settings UI.
+/// </summary>
+public partial class CameraMappingItem : ObservableObject
 {
-    public string CameraModel { get; set; } = string.Empty;
-    public string T8Value { get; set; } = string.Empty;
-    public string T9Value { get; set; } = string.Empty;
+    private readonly Action<CameraMappingItem>? _onDelete;
+
+    [ObservableProperty]
+    private string _cameraModel = string.Empty;
+
+    [ObservableProperty]
+    private string _t8Value = string.Empty;
+
+    [ObservableProperty]
+    private string _t9Value = string.Empty;
+
     public string MappingDisplay => $"{{T8}}={T8Value}  |  {{T9}}={T9Value}";
+
+    public CameraMappingItem() { }
+
+    public CameraMappingItem(Action<CameraMappingItem> onDelete)
+    {
+        _onDelete = onDelete;
+    }
+
+    [RelayCommand]
+    private void Delete()
+    {
+        _onDelete?.Invoke(this);
+    }
 }
 
 // Converters for tab navigation

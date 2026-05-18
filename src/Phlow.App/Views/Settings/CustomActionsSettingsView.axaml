@@ -13,25 +13,28 @@
             <TextBlock Text="Custom Actions" FontSize="20" FontWeight="SemiBold"/>
             <TextBlock Text="Configure post-download scripts." Opacity="0.6" FontSize="13"/>
         </StackPanel>
-        
+
         <suki:GlassCard>
             <StackPanel Spacing="16">
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <ToggleSwitch IsChecked="{Binding EnableCustomButton}" OnContent="" OffContent=""/>
                     <TextBlock Text="Enable custom button" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
-                
+
                 <StackPanel Spacing="6" IsEnabled="{Binding EnableCustomButton}">
                     <TextBlock Text="Button Caption" FontWeight="SemiBold"/>
                     <TextBox Text="{Binding CustomButtonCaption}"/>
                 </StackPanel>
-                
+
                 <StackPanel Spacing="6" IsEnabled="{Binding EnableCustomButton}">
                     <TextBlock Text="Command Line Script" FontWeight="SemiBold"/>
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                         <TextBox Text="{Binding CustomScriptPath}" FontFamily="Consolas,Courier New,monospace"/>
-                        <Button Grid.Column="1" Content="Browse" Classes="Flat"/>
+                        <Button Grid.Column="1" Content="Browse" Classes="Flat"
+                                Click="BrowseScript_Click"/>
                     </Grid>
+                    <TextBlock Text="Script receives %f (file path) and %d (directory) as arguments."
+                               Opacity="0.5" FontSize="11" FontStyle="Italic"/>
                 </StackPanel>
             </StackPanel>
         </suki:GlassCard>

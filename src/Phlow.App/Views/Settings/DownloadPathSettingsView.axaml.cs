@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using Avalonia.VisualTree;
 using Phlow.App.ViewModels;
 
 namespace Phlow.App.Views.Settings;
@@ -36,7 +35,7 @@ public partial class DownloadPathSettingsView : UserControl
 
     private void ShowTokenHelp_Click(object? sender, RoutedEventArgs e)
     {
-        if (this.GetVisualRoot() is Window owner)
+        if (TopLevel.GetTopLevel(this) is Window owner)
         {
             _ = TokenHelpWindow.ShowAsync(owner);
         }

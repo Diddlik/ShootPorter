@@ -41,39 +41,7 @@
         </suki:SukiSideMenu.HeaderContent>
         
         <suki:SukiSideMenu.FooterContent>
-            <suki:GlassCard Margin="8" Padding="12">
-                <StackPanel Spacing="8">
-                    <TextBlock Text="SOURCE" FontSize="10" Opacity="0.6" FontWeight="SemiBold"/>
-                    <ComboBox ItemsSource="{Binding InputSources}" 
-                              SelectedItem="{Binding SelectedInputSource}"
-                              HorizontalAlignment="Stretch" MinWidth="0">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="8"
-                                            ToolTip.Tip="{Binding Path}">
-                                    <TextBlock Text="{Binding Icon}" FontSize="14"/>
-                                    <TextBlock Text="{Binding DisplayName}" FontSize="12"
-                                               TextTrimming="CharacterEllipsis"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Classes="Flat" FontSize="11" Padding="8,4"
-                                Click="BrowseFolder_Click">
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                <PathIcon Data="{StaticResource IconFolder}" Width="12" Height="12"/>
-                                <TextBlock Text="Browse"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="Flat" FontSize="11" Padding="8,4"
-                                Command="{Binding RefreshDrivesCommand}" ToolTip.Tip="Refresh drives">
-                            <PathIcon Data="{StaticResource IconRefresh}" Width="12" Height="12"/>
-                        </Button>
-                    </StackPanel>
-                    <TextBlock Text="{Binding FileCountStatus}" Opacity="0.6" FontSize="10"/>
-                </StackPanel>
-            </suki:GlassCard>
+            <views:SourcePickerCard Margin="8"/>
         </suki:SukiSideMenu.FooterContent>
 
         <suki:SukiSideMenu.Items>
@@ -107,6 +75,13 @@
                                                        Foreground="#f59e0b" FontSize="13"/>
                                         </StackPanel>
                                     </suki:GlassCard>
+                                    <Button Classes="Flat" Command="{Binding RunCustomActionCommand}"
+                                            IsVisible="{Binding ShowCustomButton}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Data="{StaticResource IconSettings}" Width="12" Height="12"/>
+                                            <TextBlock Text="{Binding CustomButtonCaption}" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
                                     <Button Classes="Flat Accent" Command="{Binding StartDownloadCommand}">
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <PathIcon Data="{StaticResource IconPlay}" Width="12" Height="12"/>

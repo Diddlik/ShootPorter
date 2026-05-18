@@ -17,6 +17,7 @@ public partial class TransferQueueViewModel : ViewModelBase
 {
     private readonly List<TransferFileItem> _allFiles = [];
     private bool _suppressDateFilter;
+    private string _selectedFilterKey = TransferFilterKeys.All;
 
     [ObservableProperty]
     private int _overallProgressPercent;
@@ -54,10 +55,18 @@ public partial class TransferQueueViewModel : ViewModelBase
     public ObservableCollection<DateGroupItem> DateGroups { get; } = [];
     public ObservableCollection<TransferFileItem> Files { get; } = [];
     public IReadOnlyList<TransferFileItem> AllFiles => _allFiles;
-    public ObservableCollection<string> FilterOptions { get; } = ["All", "Pending", "Completed", "Name Clash"];
+    public ObservableCollection<TransferFilterChip> FilterChips { get; } = [];
+    public ObservableCollection<string> FilterOptions { get; } = ["All", "Ready", "Conflicts", "Downloaded", "Downloading", "Errors"];
 
     public TransferQueueViewModel()
     {
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.All, "All", SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Ready, "Ready", SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Conflicts, "Conflicts", SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Downloaded, "Downloaded", SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Downloading, "Downloading", SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Errors, "Errors", SelectFilter));
+        UpdateFilterChips();
     }
 
     partial void OnSearchTextChanged(string value)
@@ -67,6 +76,16 @@ public partial class TransferQueueViewModel : ViewModelBase
 
     partial void OnSelectedFilterChanged(string value)
     {
+        _selectedFilterKey = value switch
+        {
+            "Pending" or "Ready" => TransferFilterKeys.Ready,
+            "Completed" or "Downloaded" => TransferFilterKeys.Downloaded,
+            "Name Clash" or "Conflicts" => TransferFilterKeys.Conflicts,
+            "Downloading" => TransferFilterKeys.Downloading,
+            "Errors" => TransferFilterKeys.Errors,
+            _ => TransferFilterKeys.All
+        };
+        UpdateFilterChips();
         ApplyAllFilters();
     }
 
@@ -74,6 +93,8 @@ public partial class TransferQueueViewModel : ViewModelBase
     {
         ReadyToTransfer = _allFiles.Count(f => f.Status == FileTransferStatus.Pending);
         NameClashes = _allFiles.Count(f => f.Status == FileTransferStatus.NameClash);
+        UpdateFilterChips();
+        ApplyAllFilters();
     }
 
     [RelayCommand]
@@ -109,15 +130,17 @@ public partial class TransferQueueViewModel : ViewModelBase
         DownloadSpeedText = string.Empty;
         EstimatedTimeRemainingText = string.Empty;
         IsDownloadActive = false;
+        UpdateFilterChips();
     }
 
     public void AddFile(TransferFileItem file)
     {
         _allFiles.Add(file);
-        Files.Add(file);
         TotalFiles = _allFiles.Count;
         ReadyToTransfer = _allFiles.Count(f => f.Status == FileTransferStatus.Pending);
         NameClashes = _allFiles.Count(f => f.Status == FileTransferStatus.NameClash);
+        UpdateFilterChips();
+        ApplyAllFilters();
     }
 
     public void RebuildDateGroups()
@@ -196,13 +219,15 @@ public partial class TransferQueueViewModel : ViewModelBase
                 f.SourcePath.Contains(search, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (SelectedFilter is not null && SelectedFilter != "All")
+        if (_selectedFilterKey != TransferFilterKeys.All)
         {
-            filtered = SelectedFilter switch
+            filtered = _selectedFilterKey switch
             {
-                "Pending" => filtered.Where(f => f.Status == FileTransferStatus.Pending),
-                "Completed" => filtered.Where(f => f.Status == FileTransferStatus.Completed),
-                "Name Clash" => filtered.Where(f => f.Status == FileTransferStatus.NameClash),
+                TransferFilterKeys.Ready => filtered.Where(f => f.Status == FileTransferStatus.Pending),
+                TransferFilterKeys.Downloaded => filtered.Where(f => f.Status == FileTransferStatus.Completed),
+                TransferFilterKeys.Conflicts => filtered.Where(f => f.Status == FileTransferStatus.NameClash),
+                TransferFilterKeys.Downloading => filtered.Where(f => f.Status == FileTransferStatus.Downloading),
+                TransferFilterKeys.Errors => filtered.Where(f => f.Status == FileTransferStatus.Error),
                 _ => filtered
             };
         }
@@ -214,6 +239,91 @@ public partial class TransferQueueViewModel : ViewModelBase
             Files.Add(file);
         }
     }
+
+    private void SelectFilter(TransferFilterChip chip)
+    {
+        _selectedFilterKey = chip.Key;
+        SelectedFilter = chip.Key;
+        UpdateFilterChips();
+        ApplyAllFilters();
+    }
+
+    private void UpdateFilterChips()
+    {
+        foreach (var chip in FilterChips)
+        {
+            chip.Count = chip.Key switch
+            {
+                TransferFilterKeys.All => _allFiles.Count,
+                TransferFilterKeys.Ready => _allFiles.Count(f => f.Status == FileTransferStatus.Pending),
+                TransferFilterKeys.Downloaded => _allFiles.Count(f => f.Status == FileTransferStatus.Completed),
+                TransferFilterKeys.Conflicts => _allFiles.Count(f => f.Status == FileTransferStatus.NameClash),
+                TransferFilterKeys.Downloading => _allFiles.Count(f => f.Status == FileTransferStatus.Downloading),
+                TransferFilterKeys.Errors => _allFiles.Count(f => f.Status == FileTransferStatus.Error),
+                _ => 0
+            };
+            chip.IsActive = chip.Key == _selectedFilterKey;
+        }
+    }
+}
+
+public static class TransferFilterKeys
+{
+    public const string All = "All";
+    public const string Ready = "Ready";
+    public const string Conflicts = "Conflicts";
+    public const string Downloaded = "Downloaded";
+    public const string Downloading = "Downloading";
+    public const string Errors = "Errors";
+}
+
+public partial class TransferFilterChip : ObservableObject
+{
+    private readonly Action<TransferFilterChip> _onSelect;
+
+    [ObservableProperty]
+    private bool _isActive;
+
+    [ObservableProperty]
+    private int _count;
+
+    public TransferFilterChip(string key, string label, Action<TransferFilterChip> onSelect)
+    {
+        Key = key;
+        Label = label;
+        _onSelect = onSelect;
+    }
+
+    public string Key { get; }
+    public string Label { get; }
+    public string DisplayText => $"{Label} {Count}";
+
+    public IBrush Background => IsActive
+        ? new SolidColorBrush(Color.Parse("#2563eb"))
+        : new SolidColorBrush(Color.Parse("#111827"));
+
+    public IBrush BorderBrush => IsActive
+        ? new SolidColorBrush(Color.Parse("#60a5fa"))
+        : new SolidColorBrush(Color.Parse("#2c384b"));
+
+    public IBrush Foreground => IsActive
+        ? Brushes.White
+        : new SolidColorBrush(Color.Parse("#cbd5e1"));
+
+    partial void OnIsActiveChanged(bool value)
+    {
+        OnPropertyChanged(nameof(Background));
+        OnPropertyChanged(nameof(BorderBrush));
+        OnPropertyChanged(nameof(Foreground));
+    }
+
+    partial void OnCountChanged(int value)
+    {
+        OnPropertyChanged(nameof(DisplayText));
+    }
+
+    [RelayCommand]
+    private void Select() => _onSelect(this);
 }
 
 public partial class DateGroupItem : ObservableObject
