@@ -8,6 +8,10 @@ Built with **.NET 10** and **Avalonia UI** — runs on Windows, macOS, and Linux
 
 ---
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/b197a7e2-2f0c-412f-ae81-647e6cda6533" />
+---
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0f2e2b06-55ab-4790-8912-79a5b45dc47c" />
+
 ## Features
 
 ### Core Download Engine
