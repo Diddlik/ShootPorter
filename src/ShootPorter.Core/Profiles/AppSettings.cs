@@ -29,6 +29,9 @@ public sealed record AppSettings
     [JsonPropertyName("useCaptureTime")]
     public bool UseCaptureTime { get; init; } = true;
 
+    [JsonPropertyName("videoTimeIsLocal")]
+    public bool VideoTimeIsLocal { get; init; } = true;
+
     [JsonPropertyName("autoEjectMedia")]
     public bool AutoEjectMedia { get; init; } = true;
 
