@@ -1,4 +1,5 @@
 using Serilog;
+using ShootPorter.Core.Properties;
 namespace ShootPorter.Core.Plugins;
 
 /// <summary>
@@ -53,7 +54,7 @@ public sealed class PluginManager
             catch (Exception ex)
             {
                 // Plugin boundary: one failing plugin must not stop the others.
-                Log.Error(ex, "Plugin {Plugin} failed for {FilePath}", plugin.Name, filePath);
+                Log.Error(ex, Resources.LogPluginFailedFor, plugin.Name, filePath);
                 results.Add((plugin.Name, false));
             }
         }

@@ -1,8 +1,10 @@
+using System.Globalization;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using ShootPorter.Core.Dedup;
 using ShootPorter.Core.Tokens;
 using Serilog;
+using ShootPorter.Core.Properties;
 
 namespace ShootPorter.Core.Download;
 
@@ -99,8 +101,8 @@ public sealed class DownloadOrchestrator
                 sidecar, sidecarTarget, options.BufferSize, options.VerifyAfterCopy,
                 null, fileIndex, totalFiles, overwriteSidecar, ct).ConfigureAwait(false);
             if (!sidecarResult.Success)
-                return RetainSource(result, options, $"Sidecar copy failed for '{sidecarTarget}': {sidecarResult.ErrorMessage}",
-                    "Source retained because a sidecar copy failed.");
+                return RetainSource(result, options, string.Format(CultureInfo.CurrentCulture, Resources.SidecarCopyFailed, sidecarTarget, sidecarResult.ErrorMessage),
+                    Resources.SourceRetainedSidecarFailed);
 
             sidecars.Add((sidecar, [sidecarTarget]));
         }
@@ -117,8 +119,8 @@ public sealed class DownloadOrchestrator
                 null, fileIndex, totalFiles, overwriteBackup, ct).ConfigureAwait(false);
 
             if (!backupResult.Success)
-                return RetainSource(result, options, $"Backup failed for '{backupPath}': {backupResult.ErrorMessage}",
-                    "Source retained because a backup copy failed.");
+                return RetainSource(result, options, string.Format(CultureInfo.CurrentCulture, Resources.BackupFailed, backupPath, backupResult.ErrorMessage),
+                    Resources.SourceRetainedBackupFailed);
 
             foreach (var (sidecarSource, copies) in sidecars)
             {
@@ -130,8 +132,8 @@ public sealed class DownloadOrchestrator
                     copies[0], sidecarBackup, options.BufferSize, options.VerifyAfterCopy,
                     null, fileIndex, totalFiles, overwriteSidecar, ct).ConfigureAwait(false);
                 if (!sidecarResult.Success)
-                    return RetainSource(result, options, $"Backup failed for '{sidecarBackup}': {sidecarResult.ErrorMessage}",
-                        "Source retained because a backup copy failed.");
+                    return RetainSource(result, options, string.Format(CultureInfo.CurrentCulture, Resources.BackupFailed, sidecarBackup, sidecarResult.ErrorMessage),
+                        Resources.SourceRetainedBackupFailed);
 
                 copies.Add(sidecarBackup);
             }
@@ -252,7 +254,7 @@ public sealed class DownloadOrchestrator
             return result with
             {
                 SourceDisposition = SourceFileDisposition.Retained,
-                SourceDispositionMessage = "Source retained because transfer verification is disabled.",
+                SourceDispositionMessage = Resources.SourceRetainedNoVerify,
             };
         }
 
@@ -268,9 +270,9 @@ public sealed class DownloadOrchestrator
                     return result with
                     {
                         Success = false,
-                        ErrorMessage = $"Content check failed for '{copyPath}': copy does not match the source.",
+                        ErrorMessage = string.Format(CultureInfo.CurrentCulture, Resources.ContentCheckFailed, copyPath),
                         SourceDisposition = SourceFileDisposition.Retained,
-                        SourceDispositionMessage = "Source retained because a copy does not match the source content.",
+                        SourceDispositionMessage = Resources.SourceRetainedMismatch,
                     };
                 }
             }
@@ -284,18 +286,18 @@ public sealed class DownloadOrchestrator
             return result with
             {
                 SourceDisposition = SourceFileDisposition.Deleted,
-                SourceDispositionMessage = "Source deleted after verified transfer.",
+                SourceDispositionMessage = Resources.SourceDeletedVerified,
             };
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Log.Error(ex, "Deleting source {SourcePath} failed after a verified copy", result.SourcePath);
+            Log.Error(ex, Resources.LogDeletingSourceFailedAfterAVerifiedCopy, result.SourcePath);
             return result with
             {
                 Success = false,
-                ErrorMessage = $"Source delete failed after successful copy: {ex.Message}",
+                ErrorMessage = string.Format(CultureInfo.CurrentCulture, Resources.SourceDeleteFailed, ex.Message),
                 SourceDisposition = SourceFileDisposition.DeleteFailed,
-                SourceDispositionMessage = "Destination files were kept; source could not be deleted.",
+                SourceDispositionMessage = Resources.SourceDeleteFailedKept,
             };
         }
     }

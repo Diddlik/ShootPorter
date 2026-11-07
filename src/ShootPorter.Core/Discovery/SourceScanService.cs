@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using Serilog;
 using ShootPorter.Core.Metadata;
+using ShootPorter.Core.Properties;
 
 namespace ShootPorter.Core.Discovery;
 
@@ -53,7 +54,7 @@ public sealed class SourceScanService(IFileSystemScanner scanner, IMetadataReade
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             // MetadataExtractor throws a wide range of exception types on corrupt or unusual files.
-            Log.Warning(ex, "Reading metadata failed for {FilePath}", filePath);
+            Log.Warning(ex, Resources.LogReadingMetadataFailedFor, filePath);
             return null;
         }
     }

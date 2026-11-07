@@ -197,7 +197,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
         catch (System.Text.Json.JsonException ex)
         {
-            Log.Warning(ex, "Job code history is unreadable; starting empty");
+            Log.Warning(ex, Resources.LogJobCodeHistoryIsUnreadableStartingEmpty);
         }
         RefreshRecentJobCodes();
     }
@@ -248,7 +248,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Log.Warning(ex, "Saving the job code history failed");
+            Log.Warning(ex, Resources.LogSavingTheJobCodeHistoryFailed);
         }
     }
 
@@ -345,7 +345,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
         catch (Exception ex) when (ex is ArgumentException or FormatException)
         {
-            Log.Warning(ex, "Building the destination preview failed");
+            Log.Warning(ex, Resources.LogBuildingTheDestinationPreviewFailed);
             return Path.Combine(DestinationRoot, "preview_error.jpg");
         }
     }
@@ -360,7 +360,7 @@ public partial class SettingsViewModel : ViewModelBase
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             // MetadataExtractor throws a wide range of exception types on corrupt or unusual files.
-            Log.Warning(ex, "Reading preview metadata failed for {FilePath}", filePath);
+            Log.Warning(ex, Resources.LogReadingPreviewMetadataFailedFor, filePath);
             _previewFileMetadata = new FileMetadata { FilePath = filePath };
             PreviewFileName = Path.GetFileName(filePath);
         }
@@ -666,7 +666,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Log.Error(ex, "Saving settings failed");
+            Log.Error(ex, Resources.LogSavingSettingsFailed);
         }
     }
 

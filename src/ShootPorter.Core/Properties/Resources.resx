@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="BackupFailed" xml:space="preserve"><value>Backup failed for '{0}': {1}</value></data>
+  <data name="ContentCheckFailed" xml:space="preserve"><value>Content check failed for '{0}': copy does not match the source.</value></data>
+  <data name="LogAccessDeniedFor" xml:space="preserve"><value>Access denied for {FilePath}</value></data>
+  <data name="LogAccessDeniedWhileScanning" xml:space="preserve"><value>Access denied while scanning {Path}</value></data>
+  <data name="LogCopyingToFailed" xml:space="preserve"><value>Copying {SourcePath} to {DestinationPath} failed</value></data>
+  <data name="LogCustomScriptCouldNotBeStartedFor" xml:space="preserve"><value>Custom script {ScriptPath} could not be started for {FilePath}</value></data>
+  <data name="LogDeletingSourceFailedAfterAVerifiedCopy" xml:space="preserve"><value>Deleting source {SourcePath} failed after a verified copy</value></data>
+  <data name="LogGeonamesLookupFailed" xml:space="preserve"><value>Geonames lookup failed</value></data>
+  <data name="LogPluginFailedFor" xml:space="preserve"><value>Plugin {Plugin} failed for {FilePath}</value></data>
+  <data name="LogReadingMetadataFailedFor" xml:space="preserve"><value>Reading metadata failed for {FilePath}</value></data>
+  <data name="LogRemovableDriveEnumerationFailed" xml:space="preserve"><value>Removable drive enumeration failed</value></data>
+  <data name="LogRemovingPartialFileFailed" xml:space="preserve"><value>Removing partial file {Path} failed</value></data>
+  <data name="LogSettingsFileIsUnreadableMovedToAnd" xml:space="preserve"><value>Settings file is unreadable; moved to {BackupPath} and using defaults</value></data>
+  <data name="SidecarCopyFailed" xml:space="preserve"><value>Sidecar copy failed for '{0}': {1}</value></data>
+  <data name="SourceDeleteFailed" xml:space="preserve"><value>Source delete failed after successful copy: {0}</value></data>
+  <data name="SourceDeleteFailedKept" xml:space="preserve"><value>Destination files were kept; source could not be deleted.</value></data>
+  <data name="SourceDeletedVerified" xml:space="preserve"><value>Source deleted after verified transfer.</value></data>
+  <data name="SourceRetainedBackupFailed" xml:space="preserve"><value>Source retained because a backup copy failed.</value></data>
+  <data name="SourceRetainedMismatch" xml:space="preserve"><value>Source retained because a copy does not match the source content.</value></data>
+  <data name="SourceRetainedNoVerify" xml:space="preserve"><value>Source retained because transfer verification is disabled.</value></data>
+  <data name="SourceRetainedSidecarFailed" xml:space="preserve"><value>Source retained because a sidecar copy failed.</value></data>
+</root>

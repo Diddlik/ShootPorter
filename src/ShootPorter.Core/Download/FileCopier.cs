@@ -1,4 +1,5 @@
 using Serilog;
+using ShootPorter.Core.Properties;
 namespace ShootPorter.Core.Download;
 
 /// <summary>
@@ -92,7 +93,7 @@ public sealed class FileCopier
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Log.Error(ex, "Copying {SourcePath} to {DestinationPath} failed", sourcePath, destinationPath);
+            Log.Error(ex, Resources.LogCopyingToFailed, sourcePath, destinationPath);
             if (createdDestination)
                 TryDeleteFile(writePath);
             return new DownloadResult(sourcePath, destinationPath, false, 0, ex.Message);
@@ -107,7 +108,7 @@ public sealed class FileCopier
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Log.Warning(ex, "Removing partial file {Path} failed", path);
+            Log.Warning(ex, Resources.LogRemovingPartialFileFailed, path);
         }
     }
 }

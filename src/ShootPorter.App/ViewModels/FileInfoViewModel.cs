@@ -76,7 +76,7 @@ public partial class FileInfoViewModel(bool videoTimeIsLocal) : ViewModelBase
         catch (System.Exception ex) when (ex is not System.OperationCanceledException)
         {
             // MetadataExtractor throws a wide range of exception types on corrupt or unusual files.
-            Log.Warning(ex, "Reading metadata failed for {FilePath}", filePath);
+            Log.Warning(ex, Resources.LogReadingMetadataFailedFor, filePath);
             ErrorMessage = string.Format(Resources.MetadataReadFailed, ex.Message);
         }
         finally

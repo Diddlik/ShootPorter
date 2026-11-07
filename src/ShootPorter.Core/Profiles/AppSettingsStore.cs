@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Serilog;
+using ShootPorter.Core.Properties;
 
 namespace ShootPorter.Core.Profiles;
 
@@ -39,7 +40,7 @@ public sealed class AppSettingsStore
         catch (JsonException ex)
         {
             var backupPath = $"{_filePath}.corrupt-{DateTime.Now:yyyyMMdd-HHmmss}";
-            Log.Error(ex, "Settings file is unreadable; moved to {BackupPath} and using defaults", backupPath);
+            Log.Error(ex, Resources.LogSettingsFileIsUnreadableMovedToAnd, backupPath);
             File.Move(_filePath, backupPath, overwrite: true);
             return new AppSettings();
         }

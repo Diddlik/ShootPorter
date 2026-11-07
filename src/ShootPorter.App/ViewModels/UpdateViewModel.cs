@@ -98,7 +98,7 @@ public partial class UpdateViewModel : ViewModelBase
         catch (Exception ex)
         {
             // Shown to the user; Velopack does not document its exception types.
-            Log.Error(ex, "Downloading the update failed");
+            Log.Error(ex, Resources.LogDownloadingTheUpdateFailed);
             IsDownloading = false;
             HasError = true;
             ErrorMessage = ex.Message;

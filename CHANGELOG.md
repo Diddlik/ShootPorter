@@ -4,6 +4,13 @@ All notable ShootPorter changes intended for release notes are tracked here.
 
 ## [Unreleased]
 
+### Added
+
+- Files that already exist at their destination with the same size and time are shown as "Already downloaded" and skipped.
+- After Download options: create subfolders next to downloaded files, convert RAW files to DNG with Adobe DNG Converter.
+- Job code and sequence start are saved; the sequence continues after a download; the job code box suggests recently used codes.
+- Command line: `--source <path>`, `--profile <name>` and `--jobcode <code>` are applied at startup.
+
 ### Fixed
 
 - Downloads no longer overwrite existing files silently: when a target already exists, a dialog asks to overwrite this file, overwrite all, add a suffix (`_01`, `_02`), add a suffix to all, or cancel the download. Overwriting writes to a temp file first, so a failed copy keeps the original.

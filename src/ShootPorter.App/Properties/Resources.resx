@@ -87,6 +87,23 @@
   <data name="JobCodeLabel" xml:space="preserve"><value>Job Code {J}</value></data>
   <data name="Keywords" xml:space="preserve"><value>Keywords:</value></data>
   <data name="LoadingMetadata" xml:space="preserve"><value>Loading metadata...</value></data>
+  <data name="LogBuildingTheDestinationPreviewFailed" xml:space="preserve"><value>Building the destination preview failed</value></data>
+  <data name="LogCheckingForAnEarlierDownloadFailed" xml:space="preserve"><value>Checking {DestinationPath} for an earlier download failed</value></data>
+  <data name="LogDownloadingTheUpdateFailed" xml:space="preserve"><value>Downloading the update failed</value></data>
+  <data name="LogDriveEnumerationFailed" xml:space="preserve"><value>Drive enumeration failed</value></data>
+  <data name="LogJobCodeHistoryIsUnreadableStartingEmpty" xml:space="preserve"><value>Job code history is unreadable; starting empty</value></data>
+  <data name="LogLoadingSettingsFailedDefaultsAreUsed" xml:space="preserve"><value>Loading settings failed; defaults are used</value></data>
+  <data name="LogPostDownloadPluginsCancelled" xml:space="preserve"><value>Post-download plugins cancelled</value></data>
+  <data name="LogPostDownloadPluginsFailedFor" xml:space="preserve"><value>Post-download plugins {Plugins} failed for {FilePath}</value></data>
+  <data name="LogProfileFromTheCommandLineDoesNot" xml:space="preserve"><value>Profile {Profile} from the command line does not exist</value></data>
+  <data name="LogReadingMetadataFailedFor" xml:space="preserve"><value>Reading metadata failed for {FilePath}</value></data>
+  <data name="LogReadingPreviewMetadataFailedFor" xml:space="preserve"><value>Reading preview metadata failed for {FilePath}</value></data>
+  <data name="LogSavingSettingsFailed" xml:space="preserve"><value>Saving settings failed</value></data>
+  <data name="LogSavingTheJobCodeHistoryFailed" xml:space="preserve"><value>Saving the job code history failed</value></data>
+  <data name="LogShootPorterStarting" xml:space="preserve"><value>ShootPorter starting</value></data>
+  <data name="LogUnhandledException" xml:space="preserve"><value>Unhandled exception</value></data>
+  <data name="LogUnobservedTaskException" xml:space="preserve"><value>Unobserved task exception</value></data>
+  <data name="LogUpdateCheckFailed" xml:space="preserve"><value>Update check failed</value></data>
   <data name="ManageProfiles" xml:space="preserve"><value>Manage Profiles</value></data>
   <data name="MapCameraModelsToSpecificTokens" xml:space="preserve"><value>Map camera models to specific tokens.</value></data>
   <data name="MetadataReadFailed" xml:space="preserve"><value>Failed to read metadata: {0}</value></data>

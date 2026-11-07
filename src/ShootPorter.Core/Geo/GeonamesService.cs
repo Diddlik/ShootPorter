@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Serilog;
+using ShootPorter.Core.Properties;
 
 namespace ShootPorter.Core.Geo;
 
@@ -54,7 +55,7 @@ public sealed class GeonamesService : IGeocodingService, IDisposable
         }
         catch (HttpRequestException ex)
         {
-            Log.Warning(ex, "Geonames lookup failed");
+            Log.Warning(ex, Resources.LogGeonamesLookupFailed);
             return null;
         }
     }

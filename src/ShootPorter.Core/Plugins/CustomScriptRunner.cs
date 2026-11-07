@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using Serilog;
+using ShootPorter.Core.Properties;
 
 namespace ShootPorter.Core.Plugins;
 
@@ -51,7 +52,7 @@ public static class CustomScriptRunner
         }
         catch (Win32Exception ex)
         {
-            Log.Warning(ex, "Custom script {ScriptPath} could not be started for {FilePath}", scriptPath, filePath);
+            Log.Warning(ex, Resources.LogCustomScriptCouldNotBeStartedFor, scriptPath, filePath);
             return false;
         }
     }

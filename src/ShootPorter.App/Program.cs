@@ -5,6 +5,7 @@ using Avalonia;
 using Velopack;
 using Serilog;
 using System.Threading.Tasks;
+using ShootPorter.App.Properties;
 
 namespace ShootPorter.App;
 
@@ -45,11 +46,11 @@ sealed class Program
             .CreateLogger();
 
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-            Log.Fatal(e.ExceptionObject as Exception, "Unhandled exception");
+            Log.Fatal(e.ExceptionObject as Exception, Resources.LogUnhandledException);
         TaskScheduler.UnobservedTaskException += (_, e) =>
-            Log.Error(e.Exception, "Unobserved task exception");
+            Log.Error(e.Exception, Resources.LogUnobservedTaskException);
 
-        Log.Information("ShootPorter starting");
+        Log.Information(Resources.LogShootPorterStarting);
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

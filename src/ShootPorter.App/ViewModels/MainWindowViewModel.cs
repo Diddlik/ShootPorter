@@ -104,7 +104,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Log.Error(ex, "Loading settings failed; defaults are used");
+            Log.Error(ex, Resources.LogLoadingSettingsFailedDefaultsAreUsed);
         }
 
         await CheckForUpdateAsync();
@@ -116,7 +116,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             && Profiles.FirstOrDefault(p => p.Name.Equals(profileName, StringComparison.OrdinalIgnoreCase)) is { } profile)
             SelectedProfile = profile;
         else if (_startup.ProfileName is not null)
-            Log.Warning("Profile {Profile} from the command line does not exist", _startup.ProfileName);
+            Log.Warning(Resources.LogProfileFromTheCommandLineDoesNot, _startup.ProfileName);
 
         if (!string.IsNullOrWhiteSpace(_startup.JobCode))
             SettingsViewModel.JobCode = _startup.JobCode;
@@ -141,7 +141,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         }
         catch (Exception ex) when (ex is HttpRequestException or IOException or JsonException or OperationCanceledException)
         {
-            Log.Warning(ex, "Update check failed");
+            Log.Warning(ex, Resources.LogUpdateCheckFailed);
         }
     }
 
@@ -261,7 +261,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Log.Warning(ex, "Checking {DestinationPath} for an earlier download failed", destinationPath);
+            Log.Warning(ex, Resources.LogCheckingForAnEarlierDownloadFailed, destinationPath);
             return false;
         }
     }
@@ -359,14 +359,14 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 var failed = results.Where(r => !r.Success).Select(r => r.PluginName).ToList();
                 if (failed.Count > 0)
                 {
-                    Log.Warning("Post-download plugins {Plugins} failed for {FilePath}", failed, path);
+                    Log.Warning(Resources.LogPostDownloadPluginsFailedFor, failed, path);
                     file.StatusDetail = string.Format(Resources.PluginsFailed, string.Join(", ", failed));
                 }
             }
         }
         catch (OperationCanceledException)
         {
-            Log.Information("Post-download plugins cancelled");
+            Log.Information(Resources.LogPostDownloadPluginsCancelled);
         }
     }
 

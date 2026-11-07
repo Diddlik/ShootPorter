@@ -164,7 +164,7 @@ public partial class SourcePickerViewModel : ViewModelBase, IDisposable
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Log.Warning(ex, "Drive enumeration failed");
+            Log.Warning(ex, Resources.LogDriveEnumerationFailed);
         }
 
         if (currentPath is not null)

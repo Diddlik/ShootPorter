@@ -1,4 +1,5 @@
 using Serilog;
+using ShootPorter.Core.Properties;
 namespace ShootPorter.Core.Discovery;
 
 /// <summary>
@@ -78,7 +79,7 @@ public sealed class DriveWatcherService : IDisposable
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Log.Warning(ex, "Removable drive enumeration failed");
+            Log.Warning(ex, Resources.LogRemovableDriveEnumerationFailed);
             return [];
         }
     }

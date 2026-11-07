@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Serilog;
+using ShootPorter.Core.Properties;
 
 namespace ShootPorter.Core.Discovery;
 
@@ -29,7 +30,7 @@ public sealed class FileSystemScanner : IFileSystemScanner
         }
         catch (UnauthorizedAccessException ex)
         {
-            Log.Warning(ex, "Access denied while scanning {Path}", path);
+            Log.Warning(ex, Resources.LogAccessDeniedWhileScanning, path);
             yield break;
         }
 
@@ -50,7 +51,7 @@ public sealed class FileSystemScanner : IFileSystemScanner
             }
             catch (UnauthorizedAccessException ex)
             {
-                Log.Warning(ex, "Access denied for {FilePath}", filePath);
+                Log.Warning(ex, Resources.LogAccessDeniedFor, filePath);
                 continue;
             }
 
