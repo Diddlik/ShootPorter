@@ -3,6 +3,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Velopack;
+using Serilog;
+using System.Threading.Tasks;
 
 namespace ShootPorter.App;
 
@@ -20,7 +22,34 @@ sealed class Program
             RegisterWindowsHooks(builder);
         builder.Run();
 
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        ConfigureLogging();
+        try
+        {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
+    }
+
+    private static void ConfigureLogging()
+    {
+        var logPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "ShootPorter", "logs", "shootporter-.log");
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.File(logPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14)
+            .CreateLogger();
+
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+            Log.Fatal(e.ExceptionObject as Exception, "Unhandled exception");
+        TaskScheduler.UnobservedTaskException += (_, e) =>
+            Log.Error(e.Exception, "Unobserved task exception");
+
+        Log.Information("ShootPorter starting");
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

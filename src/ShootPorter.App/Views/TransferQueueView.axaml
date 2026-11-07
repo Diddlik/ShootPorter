@@ -202,7 +202,8 @@
                                         HorizontalAlignment="Left"
                                         Background="{Binding StatusBackground}"
                                         BorderBrush="{Binding StatusBorder}"
-                                        BorderThickness="1">
+                                        BorderThickness="1"
+                                        ToolTip.Tip="{Binding StatusDetail}">
                                     <TextBlock Text="{Binding StatusText}" FontSize="10"
                                                Foreground="{Binding StatusForeground}"/>
                                 </Border>

@@ -41,6 +41,10 @@
                     <TextBlock Text="Use capture time for file timestamp" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="12">
+                    <ToggleSwitch IsChecked="{Binding VideoTimeIsLocal}" OnContent="" OffContent=""/>
+                    <TextBlock Text="Video time is local time (off: UTC, as phones write it)" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="12">
                     <ToggleSwitch IsChecked="{Binding AutoRotateJpegs}" OnContent="" OffContent=""/>
                     <TextBlock Text="Auto-rotate JPEGs (lossless)" VerticalAlignment="Center"/>
                 </StackPanel>

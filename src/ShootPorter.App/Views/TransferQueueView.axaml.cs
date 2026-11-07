@@ -20,7 +20,8 @@ public partial class TransferQueueView : UserControl
             var window = this.FindAncestorOfType<Window>();
             if (window is not null)
             {
-                FileInfoWindow.ShowForFile(item.SourcePath, window);
+                var videoTimeIsLocal = window.DataContext is MainWindowViewModel main && main.SettingsViewModel.VideoTimeIsLocal;
+                FileInfoWindow.ShowForFile(item.SourcePath, videoTimeIsLocal, window);
             }
         }
     }

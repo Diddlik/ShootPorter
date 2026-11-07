@@ -1,15 +1,16 @@
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ShootPorter.Core.Metadata;
+using Serilog;
 
 namespace ShootPorter.App.ViewModels;
 
 /// <summary>
 /// ViewModel for the file info popup displaying EXIF metadata.
 /// </summary>
-public partial class FileInfoViewModel : ViewModelBase
+public partial class FileInfoViewModel(bool videoTimeIsLocal) : ViewModelBase
 {
-    private readonly IMetadataReader _metadataReader = new MetadataReader();
+    private readonly IMetadataReader _metadataReader = new MetadataReader(videoTimeIsLocal);
 
     [ObservableProperty]
     private string _fileName = string.Empty;
@@ -71,8 +72,10 @@ public partial class FileInfoViewModel : ViewModelBase
             var metadata = await _metadataReader.ReadMetadataAsync(filePath);
             PopulateFromMetadata(metadata);
         }
-        catch (System.Exception ex)
+        catch (System.Exception ex) when (ex is not System.OperationCanceledException)
         {
+            // MetadataExtractor throws a wide range of exception types on corrupt or unusual files.
+            Log.Warning(ex, "Reading metadata failed for {FilePath}", filePath);
             ErrorMessage = $"Failed to read metadata: {ex.Message}";
         }
         finally

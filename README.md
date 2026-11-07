@@ -91,9 +91,10 @@ Automatic update checking and installation via [Velopack](https://velopack.io/) 
 
 | Category | Formats |
 |----------|---------|
-| **Images** | JPEG, TIFF, PNG, BMP, GIF, WEBP, HEIF, HEIC |
-| **RAW** | CR2, CR3, NEF, ARW, DNG, RAF, ORF, PEF, GPR, RW2, SRW, 3FR, IIQ, MOS, ERF, KDC, DCR, X3F |
-| **Video** | MOV, MP4, AVI, MTS, M2TS, CRM, MXF |
+| **Images** | JPEG, TIFF, PNG, HEIF, HEIC |
+| **RAW** | CR2, CR3, NEF, NRW, ARW, DNG, RAF, ORF, PEF, GPR, RW2, SRW, 3FR, IIQ |
+| **Video** | MOV, MP4, AVI, MTS, 3GP, CRM, MXF |
+| **Sidecars** | XMP, WAV, THM (copied with their main file, e.g. `IMG_0001.xmp` or `IMG_0001.CR3.xmp`) |
 
 ---
 
@@ -103,12 +104,13 @@ Automatic update checking and installation via [Velopack](https://velopack.io/) 
 |-------|-----------|
 | **Runtime** | .NET 10 |
 | **UI Framework** | [Avalonia UI](https://avaloniaui.net/) 11.x |
-| **UI Theme** | [FluentAvalonia](https://github.com/amwx/FluentAvalonia) (Windows 11 Fluent Design) |
+| **UI Theme** | [SukiUI](https://github.com/kikipoulet/SukiUI) |
 | **MVVM** | [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) |
 | **Metadata** | [MetadataExtractor](https://github.com/drewnoakes/metadata-extractor-dotnet) |
 | **Auto-Update** | [Velopack](https://velopack.io/) |
 | **Testing** | [xUnit](https://xunit.net/) |
 | **Persistence** | JSON files |
+| **Logging** | [Serilog](https://serilog.net/) (rolling file in `%LocalAppData%/ShootPorter/logs`) |
 
 ---
 

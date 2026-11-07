@@ -41,7 +41,7 @@
         </suki:SukiSideMenu.HeaderContent>
         
         <suki:SukiSideMenu.FooterContent>
-            <views:SourcePickerCard Margin="8"/>
+            <views:SourcePickerCard Margin="8" DataContext="{Binding SourcePicker}"/>
         </suki:SukiSideMenu.FooterContent>
 
         <suki:SukiSideMenu.Items>

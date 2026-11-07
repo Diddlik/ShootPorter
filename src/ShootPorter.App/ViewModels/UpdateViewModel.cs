@@ -5,6 +5,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShootPorter.App.Services;
+using Serilog;
 
 namespace ShootPorter.App.ViewModels;
 
@@ -68,7 +69,8 @@ public partial class UpdateViewModel : ViewModelBase
         IsDownloading = true;
         HasError = false;
         StatusText = "Downloading update...";
-        _downloadCts = new CancellationTokenSource();
+        using var downloadCts = new CancellationTokenSource();
+        _downloadCts = downloadCts;
 
         try
         {
@@ -94,10 +96,16 @@ public partial class UpdateViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            // Shown to the user; Velopack does not document its exception types.
+            Log.Error(ex, "Downloading the update failed");
             IsDownloading = false;
             HasError = true;
             ErrorMessage = ex.Message;
             StatusText = "Download failed.";
+        }
+        finally
+        {
+            _downloadCts = null;
         }
     }
 

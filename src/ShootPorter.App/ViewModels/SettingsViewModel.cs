@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using ShootPorter.Core.Metadata;
 using ShootPorter.Core.Profiles;
 using ShootPorter.Core.Tokens;
+using Serilog;
 
 namespace ShootPorter.App.ViewModels;
 
@@ -34,7 +35,6 @@ public partial class SettingsViewModel : ViewModelBase
     private readonly AppSettingsStore _settingsStore = new(SettingsFilePath);
     private readonly TokenRegistry _tokenRegistry = new();
     private readonly TokenParser _tokenParser;
-    private readonly IMetadataReader _metadataReader = new MetadataReader();
 
     private static readonly DateTimeOffset FallbackSampleDateTime = new(2026, 3, 29, 14, 9, 0, TimeSpan.Zero);
     private const string FallbackOriginalFileName = "DSC_0312";
@@ -94,6 +94,9 @@ public partial class SettingsViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _useCaptureTime = true;
+
+    [ObservableProperty]
+    private bool _videoTimeIsLocal = true;
 
     [ObservableProperty]
     private bool _autoEjectMedia = true;
@@ -171,7 +174,7 @@ public partial class SettingsViewModel : ViewModelBase
 
     public async Task InitializeAsync()
     {
-        var settings = await _settingsStore.LoadAsync().ConfigureAwait(false);
+        var settings = await _settingsStore.LoadAsync();
         ApplySettings(settings);
     }
 
@@ -207,6 +210,7 @@ public partial class SettingsViewModel : ViewModelBase
     partial void OnDriveLetterChanged(string value) => ScheduleSave();
     partial void OnDisablePtpDownloadsChanged(bool value) => ScheduleSave();
     partial void OnUseCaptureTimeChanged(bool value) => ScheduleSave();
+    partial void OnVideoTimeIsLocalChanged(bool value) => ScheduleSave();
     partial void OnAutoEjectMediaChanged(bool value) => ScheduleSave();
     partial void OnSaveReadOnlyChanged(bool value) => ScheduleSave();
     partial void OnAutoRotateJpegsChanged(bool value) => ScheduleSave();
@@ -253,48 +257,21 @@ public partial class SettingsViewModel : ViewModelBase
         try
         {
             var meta = _previewFileMetadata;
-            var hasRealFile = meta is not null;
 
-            var captureDateTime = (hasRealFile ? meta!.CaptureDateTime : null) ?? FallbackSampleDateTime;
-            var originalFileName = hasRealFile
-                ? Path.GetFileNameWithoutExtension(meta!.FilePath)
-                : FallbackOriginalFileName;
-            var extension = hasRealFile
-                ? Path.GetExtension(meta!.FilePath)
-                : FallbackExtension;
-            var sourceFolderName = hasRealFile && Path.GetDirectoryName(meta!.FilePath) is { } dir
-                ? Path.GetFileName(dir)
-                : string.Empty;
-
-            var cameraMappings = BuildCameraMappingsDictionary(meta?.CameraModel, meta?.CameraSerialNumber);
-
-            var context = new TokenContext(
-                CaptureDateTime: captureDateTime,
-                OriginalFileName: originalFileName,
-                Extension: extension,
-                JobCode: string.IsNullOrEmpty(JobCode) ? "JOB001" : JobCode,
-                SequenceNumber: SequenceStart,
-                CustomTokens: new Dictionary<string, string>())
-            {
-                ImageNumber = TokenContext.ExtractImageNumber(originalFileName),
-                SourceFolderName = sourceFolderName,
-                SourceFolderNumber = TokenContext.ExtractImageNumber(sourceFolderName),
-                CameraManufacturer = meta?.CameraManufacturer,
-                CameraModel = meta?.CameraModel,
-                CameraSerialNumber = meta?.CameraSerialNumber,
-                IsoSpeed = meta?.IsoSpeed,
-                Aperture = meta?.Aperture,
-                ShutterSpeed = meta?.ShutterSpeed,
-                Copyright = meta?.Copyright,
-                Owner = meta?.Artist,
-                CameraMappings = cameraMappings,
-            };
+            var context = TokenContext.ForFile(
+                meta?.FilePath ?? FallbackOriginalFileName + FallbackExtension,
+                meta,
+                meta?.CaptureDateTime ?? FallbackSampleDateTime,
+                string.IsNullOrEmpty(JobCode) ? "JOB001" : JobCode,
+                SequenceStart,
+                BuildCameraMappingsDictionary(meta?.CameraModel, meta?.CameraSerialNumber));
 
             var generatedName = _tokenParser.Parse(DestinationTemplate, context);
-            return Path.Combine(DestinationRoot, generatedName + extension);
+            return Path.Combine(DestinationRoot, generatedName + context.Extension);
         }
-        catch
+        catch (Exception ex) when (ex is ArgumentException or FormatException)
         {
+            Log.Warning(ex, "Building the destination preview failed");
             return Path.Combine(DestinationRoot, "preview_error.jpg");
         }
     }
@@ -303,11 +280,13 @@ public partial class SettingsViewModel : ViewModelBase
     {
         try
         {
-            _previewFileMetadata = await _metadataReader.ReadMetadataAsync(filePath);
+            _previewFileMetadata = await new MetadataReader(VideoTimeIsLocal).ReadMetadataAsync(filePath);
             PreviewFileName = Path.GetFileName(filePath);
         }
-        catch
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
+            // MetadataExtractor throws a wide range of exception types on corrupt or unusual files.
+            Log.Warning(ex, "Reading preview metadata failed for {FilePath}", filePath);
             _previewFileMetadata = new FileMetadata { FilePath = filePath };
             PreviewFileName = Path.GetFileName(filePath);
         }
@@ -470,6 +449,7 @@ public partial class SettingsViewModel : ViewModelBase
             DriveLetter = settings.DriveLetter;
             DisablePtpDownloads = settings.DisablePtpDownloads;
             UseCaptureTime = settings.UseCaptureTime;
+            VideoTimeIsLocal = settings.VideoTimeIsLocal;
             AutoEjectMedia = settings.AutoEjectMedia;
             SaveReadOnly = settings.SaveReadOnly;
             AutoRotateJpegs = settings.AutoRotateJpegs;
@@ -541,6 +521,7 @@ public partial class SettingsViewModel : ViewModelBase
         DriveLetter = DriveLetter,
         DisablePtpDownloads = DisablePtpDownloads,
         UseCaptureTime = UseCaptureTime,
+        VideoTimeIsLocal = VideoTimeIsLocal,
         AutoEjectMedia = AutoEjectMedia,
         SaveReadOnly = SaveReadOnly,
         AutoRotateJpegs = AutoRotateJpegs,
@@ -579,6 +560,7 @@ public partial class SettingsViewModel : ViewModelBase
         if (_isLoadingSettings) return;
 
         _saveCts?.Cancel();
+        _saveCts?.Dispose();
         _saveCts = new CancellationTokenSource();
         var ct = _saveCts.Token;
         _ = SaveAfterDelayAsync(ct);
@@ -588,19 +570,27 @@ public partial class SettingsViewModel : ViewModelBase
     {
         try
         {
-            await Task.Delay(500, cancellationToken).ConfigureAwait(false);
-            await _settingsStore.SaveAsync(CaptureSettings(), cancellationToken).ConfigureAwait(false);
+            // Stay on the UI thread for CaptureSettings; the write itself is not cancellable.
+            await Task.Delay(500, cancellationToken);
+            await _settingsStore.SaveAsync(CaptureSettings());
         }
         catch (OperationCanceledException)
         {
             // Debounce cancelled by a newer save request
         }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Log.Error(ex, "Saving settings failed");
+        }
     }
 
-    public async Task SaveSettingsNowAsync()
+    /// <summary>
+    /// Saves synchronously; used on application exit so pending changes are not lost.
+    /// </summary>
+    public void SaveSettingsNow()
     {
         _saveCts?.Cancel();
-        await _settingsStore.SaveAsync(CaptureSettings()).ConfigureAwait(false);
+        _settingsStore.Save(CaptureSettings());
     }
 
     public void SetSourceHistory(string selectedSourcePath, IEnumerable<string> recentSourcePaths)
@@ -698,45 +688,18 @@ public partial class SettingsViewModel : ViewModelBase
     /// </summary>
     public void UpdateDetectedCamera(string? cameraModel, string? serialNumber)
     {
-        if (IdentifyCameraBySerial && !string.IsNullOrWhiteSpace(serialNumber))
-        {
-            DetectedCamera = $"{cameraModel} ({serialNumber})";
-        }
-        else if (!string.IsNullOrWhiteSpace(cameraModel))
-        {
-            DetectedCamera = cameraModel;
-        }
+        var identifier = CameraMappingResolver.GetCameraIdentifier(cameraModel, serialNumber, IdentifyCameraBySerial);
+        if (!string.IsNullOrWhiteSpace(identifier))
+            DetectedCamera = identifier;
     }
 
     /// <summary>
-    /// Builds a camera mappings dictionary for token resolution from the current mapping entries.
-    /// Matches the given camera identifier against stored mappings.
+    /// Builds the {T8}/{T9} values for a camera from the current mapping entries.
     /// </summary>
-    public IReadOnlyDictionary<string, string> BuildCameraMappingsDictionary(string? cameraModel, string? serialNumber)
-    {
-        var result = new Dictionary<string, string>();
-
-        if (CameraMappings.Count == 0)
-            return result;
-
-        var identifier = IdentifyCameraBySerial && !string.IsNullOrWhiteSpace(serialNumber)
-            ? $"{cameraModel} ({serialNumber})"
-            : cameraModel;
-
-        if (string.IsNullOrWhiteSpace(identifier))
-            return result;
-
-        var match = CameraMappings.FirstOrDefault(
-            m => m.CameraModel.Equals(identifier, StringComparison.OrdinalIgnoreCase));
-
-        if (match is not null)
-        {
-            result["T8"] = match.T8Value;
-            result["T9"] = match.T9Value;
-        }
-
-        return result;
-    }
+    public IReadOnlyDictionary<string, string> BuildCameraMappingsDictionary(string? cameraModel, string? serialNumber) =>
+        CameraMappingResolver.Resolve(
+            CameraMappings.Select(m => new SavedCameraMapping { CameraModel = m.CameraModel, T8Value = m.T8Value, T9Value = m.T9Value }),
+            cameraModel, serialNumber, IdentifyCameraBySerial);
 
     private void LoadCameraMappings()
     {
@@ -747,235 +710,4 @@ public partial class SettingsViewModel : ViewModelBase
             T9Value = "{T1}"
         });
     }
-}
-
-public partial class ProfileItem : ObservableObject
-{
-    public static readonly IValueConverter BorderConverter = new ProfileBorderConverter();
-    public static readonly IValueConverter ButtonTextConverter = new ProfileButtonTextConverter();
-    public static readonly IValueConverter ButtonBgConverter = new ProfileButtonBgConverter();
-    public static readonly IValueConverter ButtonFgConverter = new ProfileButtonFgConverter();
-
-    private readonly Action<ProfileItem>? _onSelect;
-    private readonly Action<ProfileItem>? _onDelete;
-    private readonly Action<ProfileItem>? _onSave;
-
-    private string _backupName = string.Empty;
-    private string _backupPath = string.Empty;
-    private string _backupNamingTemplate = string.Empty;
-
-    [ObservableProperty]
-    private string _name = string.Empty;
-
-    [ObservableProperty]
-    private string _path = string.Empty;
-
-    [ObservableProperty]
-    private string _namingTemplate = string.Empty;
-
-    [ObservableProperty]
-    private bool _isActive;
-
-    [ObservableProperty]
-    private bool _canDelete = true;
-
-    [ObservableProperty]
-    private bool _isEditing;
-
-    public ProfileItem()
-    {
-    }
-
-    public ProfileItem(Action<ProfileItem> onSelect, Action<ProfileItem> onDelete, Action<ProfileItem> onSave)
-    {
-        _onSelect = onSelect;
-        _onDelete = onDelete;
-        _onSave = onSave;
-    }
-
-    [RelayCommand]
-    private void Select()
-    {
-        _onSelect?.Invoke(this);
-    }
-
-    [RelayCommand]
-    private void Delete()
-    {
-        _onDelete?.Invoke(this);
-    }
-
-    [RelayCommand]
-    private void Edit()
-    {
-        _backupName = Name;
-        _backupPath = Path;
-        _backupNamingTemplate = NamingTemplate;
-        IsEditing = true;
-    }
-
-    [RelayCommand]
-    private void SaveEdit()
-    {
-        IsEditing = false;
-        _onSave?.Invoke(this);
-    }
-
-    [RelayCommand]
-    private void CancelEdit()
-    {
-        Name = _backupName;
-        Path = _backupPath;
-        NamingTemplate = _backupNamingTemplate;
-        IsEditing = false;
-    }
-}
-
-public record TokenInfo(string Token, string Description);
-
-/// <summary>
-/// Represents a single camera-to-token mapping entry in the settings UI.
-/// </summary>
-public partial class CameraMappingItem : ObservableObject
-{
-    private readonly Action<CameraMappingItem>? _onDelete;
-
-    [ObservableProperty]
-    private string _cameraModel = string.Empty;
-
-    [ObservableProperty]
-    private string _t8Value = string.Empty;
-
-    [ObservableProperty]
-    private string _t9Value = string.Empty;
-
-    public string MappingDisplay => $"{{T8}}={T8Value}  |  {{T9}}={T9Value}";
-
-    public CameraMappingItem() { }
-
-    public CameraMappingItem(Action<CameraMappingItem> onDelete)
-    {
-        _onDelete = onDelete;
-    }
-
-    [RelayCommand]
-    private void Delete()
-    {
-        _onDelete?.Invoke(this);
-    }
-}
-
-// Converters for tab navigation
-public class TabBackgroundConverter : IValueConverter
-{
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is string current && parameter is string tab)
-        {
-            return current == tab
-                ? new SolidColorBrush(Color.Parse("#eff6ff"))
-                : Brushes.Transparent;
-        }
-        return Brushes.Transparent;
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => throw new NotImplementedException();
-}
-
-public class TabForegroundConverter : IValueConverter
-{
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is string current && parameter is string tab)
-        {
-            return current == tab
-                ? new SolidColorBrush(Color.Parse("#2563eb"))
-                : new SolidColorBrush(Color.Parse("#475569"));
-        }
-        return new SolidColorBrush(Color.Parse("#475569"));
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => throw new NotImplementedException();
-}
-
-public class TabBorderBrushConverter : IValueConverter
-{
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is string current && parameter is string tab)
-        {
-            return current == tab
-                ? new SolidColorBrush(Color.Parse("#2563eb"))
-                : Brushes.Transparent;
-        }
-        return Brushes.Transparent;
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => throw new NotImplementedException();
-}
-
-// Converters for profile cards
-public class ProfileBorderConverter : IValueConverter
-{
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is bool isActive)
-        {
-            return isActive
-                ? new SolidColorBrush(Color.Parse("#2563eb"))
-                : new SolidColorBrush(Color.Parse("#e2e8f0"));
-        }
-        return new SolidColorBrush(Color.Parse("#e2e8f0"));
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => throw new NotImplementedException();
-}
-
-public class ProfileButtonTextConverter : IValueConverter
-{
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        return value is bool isActive && isActive ? "ACTIVE" : "SELECT";
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => throw new NotImplementedException();
-}
-
-public class ProfileButtonBgConverter : IValueConverter
-{
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is bool isActive)
-        {
-            return isActive
-                ? new SolidColorBrush(Color.Parse("#2563eb"))
-                : Brushes.Transparent;
-        }
-        return Brushes.Transparent;
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => throw new NotImplementedException();
-}
-
-public class ProfileButtonFgConverter : IValueConverter
-{
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is bool isActive)
-        {
-            return isActive
-                ? Brushes.White
-                : new SolidColorBrush(Color.Parse("#475569"));
-        }
-        return new SolidColorBrush(Color.Parse("#475569"));
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => throw new NotImplementedException();
 }

@@ -11,9 +11,9 @@ public partial class FileInfoWindow : Window
         InitializeComponent();
     }
 
-    public static async void ShowForFile(string filePath, Window owner)
+    public static async void ShowForFile(string filePath, bool videoTimeIsLocal, Window owner)
     {
-        var viewModel = new FileInfoViewModel();
+        var viewModel = new FileInfoViewModel(videoTimeIsLocal);
         var window = new FileInfoWindow
         {
             DataContext = viewModel

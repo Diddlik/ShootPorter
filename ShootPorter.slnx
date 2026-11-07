@@ -11,6 +11,9 @@
     </Project>
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/ShootPorter.App.Tests/ShootPorter.App.Tests.csproj">
+      <Platform Project="x64" />
+    </Project>
     <Project Path="tests/ShootPorter.Core.Tests/ShootPorter.Core.Tests.csproj">
       <Platform Project="x64" />
     </Project>

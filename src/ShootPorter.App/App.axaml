@@ -1,7 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ShootPorter.App.App"
-             xmlns:local="using:ShootPorter.App"
              xmlns:suki="using:SukiUI"
              RequestedThemeVariant="Default">
 
@@ -12,10 +11,6 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
-
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
 
     <Application.Styles>
         <suki:SukiTheme ThemeColor="Blue"/>

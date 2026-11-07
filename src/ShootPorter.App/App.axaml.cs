@@ -24,8 +24,11 @@ public partial class App : Application
                 var dialog = new UpdateDialog(vm);
                 dialog.ShowDialog(mainWindow);
             };
+            viewModel.AskExistingFile = path =>
+                new ExistingFileDialog(path).ShowDialog<ExistingFileChoice>(mainWindow);
             mainWindow.DataContext = viewModel;
             desktop.MainWindow = mainWindow;
+            desktop.Exit += (_, _) => viewModel.Dispose();
         }
 
         base.OnFrameworkInitializationCompleted();

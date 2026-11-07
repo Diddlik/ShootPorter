@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Avalonia.Media;
+using Avalonia.Media.Immutable;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ShootPorter.Core.Download;
 using ShootPorter.Core.Metadata;
 
 namespace ShootPorter.App.ViewModels;
@@ -91,9 +94,9 @@ public partial class TransferQueueViewModel : ViewModelBase
 
     public void RecalculateStats()
     {
-        ReadyToTransfer = _allFiles.Count(f => f.Status == FileTransferStatus.Pending);
-        NameClashes = _allFiles.Count(f => f.Status == FileTransferStatus.NameClash);
         UpdateFilterChips();
+        ReadyToTransfer = FilterChips.First(c => c.Key == TransferFilterKeys.Ready).Count;
+        NameClashes = FilterChips.First(c => c.Key == TransferFilterKeys.Conflicts).Count;
         ApplyAllFilters();
     }
 
@@ -133,14 +136,11 @@ public partial class TransferQueueViewModel : ViewModelBase
         UpdateFilterChips();
     }
 
-    public void AddFile(TransferFileItem file)
+    public void AddFiles(IReadOnlyCollection<TransferFileItem> files)
     {
-        _allFiles.Add(file);
+        _allFiles.AddRange(files);
         TotalFiles = _allFiles.Count;
-        ReadyToTransfer = _allFiles.Count(f => f.Status == FileTransferStatus.Pending);
-        NameClashes = _allFiles.Count(f => f.Status == FileTransferStatus.NameClash);
-        UpdateFilterChips();
-        ApplyAllFilters();
+        RecalculateStats();
     }
 
     public void RebuildDateGroups()
@@ -232,12 +232,14 @@ public partial class TransferQueueViewModel : ViewModelBase
             };
         }
 
-        Files.Clear();
+        // Status changes during a download call this per file; rebuilding an unchanged list resets the view.
+        var result = filtered.ToList();
+        if (result.SequenceEqual(Files))
+            return;
 
-        foreach (var file in filtered)
-        {
+        Files.Clear();
+        foreach (var file in result)
             Files.Add(file);
-        }
     }
 
     private void SelectFilter(TransferFilterChip chip)
@@ -250,207 +252,23 @@ public partial class TransferQueueViewModel : ViewModelBase
 
     private void UpdateFilterChips()
     {
+        var counts = new int[Enum.GetValues<FileTransferStatus>().Length];
+        foreach (var file in _allFiles)
+            counts[(int)file.Status]++;
+
         foreach (var chip in FilterChips)
         {
             chip.Count = chip.Key switch
             {
                 TransferFilterKeys.All => _allFiles.Count,
-                TransferFilterKeys.Ready => _allFiles.Count(f => f.Status == FileTransferStatus.Pending),
-                TransferFilterKeys.Downloaded => _allFiles.Count(f => f.Status == FileTransferStatus.Completed),
-                TransferFilterKeys.Conflicts => _allFiles.Count(f => f.Status == FileTransferStatus.NameClash),
-                TransferFilterKeys.Downloading => _allFiles.Count(f => f.Status == FileTransferStatus.Downloading),
-                TransferFilterKeys.Errors => _allFiles.Count(f => f.Status == FileTransferStatus.Error),
+                TransferFilterKeys.Ready => counts[(int)FileTransferStatus.Pending],
+                TransferFilterKeys.Downloaded => counts[(int)FileTransferStatus.Completed],
+                TransferFilterKeys.Conflicts => counts[(int)FileTransferStatus.NameClash],
+                TransferFilterKeys.Downloading => counts[(int)FileTransferStatus.Downloading],
+                TransferFilterKeys.Errors => counts[(int)FileTransferStatus.Error],
                 _ => 0
             };
             chip.IsActive = chip.Key == _selectedFilterKey;
         }
     }
-}
-
-public static class TransferFilterKeys
-{
-    public const string All = "All";
-    public const string Ready = "Ready";
-    public const string Conflicts = "Conflicts";
-    public const string Downloaded = "Downloaded";
-    public const string Downloading = "Downloading";
-    public const string Errors = "Errors";
-}
-
-public partial class TransferFilterChip : ObservableObject
-{
-    private readonly Action<TransferFilterChip> _onSelect;
-
-    [ObservableProperty]
-    private bool _isActive;
-
-    [ObservableProperty]
-    private int _count;
-
-    public TransferFilterChip(string key, string label, Action<TransferFilterChip> onSelect)
-    {
-        Key = key;
-        Label = label;
-        _onSelect = onSelect;
-    }
-
-    public string Key { get; }
-    public string Label { get; }
-    public string DisplayText => $"{Label} {Count}";
-
-    public IBrush Background => IsActive
-        ? new SolidColorBrush(Color.Parse("#2563eb"))
-        : new SolidColorBrush(Color.Parse("#111827"));
-
-    public IBrush BorderBrush => IsActive
-        ? new SolidColorBrush(Color.Parse("#60a5fa"))
-        : new SolidColorBrush(Color.Parse("#2c384b"));
-
-    public IBrush Foreground => IsActive
-        ? Brushes.White
-        : new SolidColorBrush(Color.Parse("#cbd5e1"));
-
-    partial void OnIsActiveChanged(bool value)
-    {
-        OnPropertyChanged(nameof(Background));
-        OnPropertyChanged(nameof(BorderBrush));
-        OnPropertyChanged(nameof(Foreground));
-    }
-
-    partial void OnCountChanged(int value)
-    {
-        OnPropertyChanged(nameof(DisplayText));
-    }
-
-    [RelayCommand]
-    private void Select() => _onSelect(this);
-}
-
-public partial class DateGroupItem : ObservableObject
-{
-    [ObservableProperty]
-    private DateTime _date;
-
-    [ObservableProperty]
-    private int _fileCount;
-
-    [ObservableProperty]
-    private bool _isSelected;
-
-    public event EventHandler? DateSelectionChanged;
-
-    public string DisplayDate => Date.ToString("dd MMM");
-
-    partial void OnIsSelectedChanged(bool value)
-    {
-        DateSelectionChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    [RelayCommand]
-    private void Toggle() => IsSelected = !IsSelected;
-}
-
-public enum FileTransferStatus
-{
-    Pending,
-    Downloading,
-    Completed,
-    NameClash,
-    Error
-}
-
-public partial class TransferFileItem : ObservableObject
-{
-    [ObservableProperty]
-    private bool _isSelected = true;
-
-    [ObservableProperty]
-    private string _fileName = string.Empty;
-
-    [ObservableProperty]
-    private FileTransferStatus _status;
-
-    [ObservableProperty]
-    private int _progress;
-
-    [ObservableProperty]
-    private long _sizeBytes;
-
-    [ObservableProperty]
-    private DateTime _captureDate;
-
-    [ObservableProperty]
-    private string _destinationPreview = string.Empty;
-
-    [ObservableProperty]
-    private string _sourcePath = string.Empty;
-
-    public FileMetadata? Metadata { get; init; }
-
-    public string SizeDisplay => SizeBytes switch
-    {
-        < 1024 => $"{SizeBytes} B",
-        < 1024 * 1024 => $"{SizeBytes / 1024.0:F1} KB",
-        _ => $"{SizeBytes / (1024.0 * 1024.0):F1} MB",
-    };
-
-    public string CaptureDateDisplay => CaptureDate.ToString("dd/MM/yy");
-    public string CaptureTimeDisplay => CaptureDate.ToString("HH:mm:ss");
-
-    public string SourceFolderName => Path.GetDirectoryName(SourcePath) is { } dir
-        ? Path.GetFileName(dir)
-        : string.Empty;
-
-    public string StatusText => Status switch
-    {
-        FileTransferStatus.Completed => "Completed",
-        FileTransferStatus.Downloading => "Downloading",
-        FileTransferStatus.NameClash => "Name clash",
-        FileTransferStatus.Error => "Error",
-        _ => "Pending"
-    };
-
-    public string StatusIcon => Status switch
-    {
-        FileTransferStatus.Completed => "Checkmark",
-        FileTransferStatus.Downloading => "Sync",
-        FileTransferStatus.NameClash => "Warning",
-        FileTransferStatus.Error => "Dismiss",
-        _ => "Info"
-    };
-
-    public IBrush StatusBackground => Status switch
-    {
-        FileTransferStatus.Completed => new SolidColorBrush(Color.Parse("#dcfce7")),
-        FileTransferStatus.Downloading => new SolidColorBrush(Color.Parse("#dbeafe")),
-        FileTransferStatus.NameClash => new SolidColorBrush(Color.Parse("#fef3c7")),
-        FileTransferStatus.Error => new SolidColorBrush(Color.Parse("#fee2e2")),
-        _ => new SolidColorBrush(Color.Parse("#f1f5f9"))
-    };
-
-    public IBrush StatusBorder => Status switch
-    {
-        FileTransferStatus.Completed => new SolidColorBrush(Color.Parse("#86efac")),
-        FileTransferStatus.Downloading => new SolidColorBrush(Color.Parse("#93c5fd")),
-        FileTransferStatus.NameClash => new SolidColorBrush(Color.Parse("#fcd34d")),
-        FileTransferStatus.Error => new SolidColorBrush(Color.Parse("#fca5a5")),
-        _ => new SolidColorBrush(Color.Parse("#e2e8f0"))
-    };
-
-    public IBrush StatusForeground => Status switch
-    {
-        FileTransferStatus.Completed => new SolidColorBrush(Color.Parse("#166534")),
-        FileTransferStatus.Downloading => new SolidColorBrush(Color.Parse("#1d4ed8")),
-        FileTransferStatus.NameClash => new SolidColorBrush(Color.Parse("#92400e")),
-        FileTransferStatus.Error => new SolidColorBrush(Color.Parse("#991b1b")),
-        _ => new SolidColorBrush(Color.Parse("#475569"))
-    };
-
-    public IBrush ProgressColor => Status switch
-    {
-        FileTransferStatus.Completed => new SolidColorBrush(Color.Parse("#10b981")),
-        FileTransferStatus.Downloading => new SolidColorBrush(Color.Parse("#3b82f6")),
-        FileTransferStatus.NameClash => new SolidColorBrush(Color.Parse("#f59e0b")),
-        _ => new SolidColorBrush(Color.Parse("#cbd5e1"))
-    };
 }

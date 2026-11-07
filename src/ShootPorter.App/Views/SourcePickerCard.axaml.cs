@@ -24,7 +24,7 @@ public partial class SourcePickerCard : UserControl
             AllowMultiple = false,
         });
 
-        if (folders.Count == 0 || DataContext is not MainWindowViewModel vm)
+        if (folders.Count == 0 || DataContext is not SourcePickerViewModel vm)
             return;
 
         var path = folders[0].TryGetLocalPath();
@@ -34,7 +34,7 @@ public partial class SourcePickerCard : UserControl
 
     private void RecentSource_Click(object? sender, RoutedEventArgs e)
     {
-        if (sender is Button { Tag: string path } && DataContext is MainWindowViewModel vm)
+        if (sender is Button { Tag: string path } && DataContext is SourcePickerViewModel vm)
         {
             vm.SelectRecentSource(path);
         }

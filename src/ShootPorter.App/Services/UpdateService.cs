@@ -11,7 +11,7 @@ namespace ShootPorter.App.Services;
 /// </summary>
 public sealed class UpdateService
 {
-    private const string RepoUrl = "https://github.com/RagnarLothworx/ShootPorter";
+    private const string RepoUrl = "https://github.com/Diddlik/ShootPorter";
 
     private readonly UpdateManager _updateManager;
     private UpdateInfo? _pendingUpdate;

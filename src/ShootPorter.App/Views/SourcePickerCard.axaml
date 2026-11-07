@@ -3,9 +3,9 @@
              xmlns:vm="using:ShootPorter.App.ViewModels"
              xmlns:suki="using:SukiUI.Controls"
              x:Class="ShootPorter.App.Views.SourcePickerCard"
-             x:DataType="vm:MainWindowViewModel">
+             x:DataType="vm:SourcePickerViewModel">
 
-    <suki:GlassCard Padding="12">
+    <suki:GlassCard Padding="12" IsEnabled="{Binding !IsLocked}">
         <StackPanel Spacing="10">
             <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
                 <PathIcon Data="{StaticResource IconFolder}" Width="14" Height="14"

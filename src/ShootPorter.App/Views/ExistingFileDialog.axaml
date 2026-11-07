@@ -1,0 +1,24 @@
+<suki:SukiWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:suki="using:SukiUI.Controls"
+        x:Class="ShootPorter.App.Views.ExistingFileDialog"
+        Title="File already exists"
+        Width="560" SizeToContent="Height"
+        CanMinimize="False" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <StackPanel Margin="24" Spacing="16">
+        <TextBlock Text="File already exists" FontSize="20" FontWeight="SemiBold"/>
+        <TextBlock Text="This file is already in the destination:" Opacity="0.8"/>
+        <TextBlock x:Name="PathText" TextWrapping="Wrap"
+                   FontFamily="Consolas,Courier New,monospace" FontSize="12"/>
+
+        <WrapPanel HorizontalAlignment="Right">
+            <Button Content="Cancel download" Classes="Flat" Margin="0,0,8,8" Click="Cancel_Click"/>
+            <Button Content="Add suffix to all" Classes="Flat" Margin="0,0,8,8" Click="AddSuffixAll_Click"/>
+            <Button Content="Add suffix" Classes="Flat" Margin="0,0,8,8" Click="AddSuffix_Click"/>
+            <Button Content="Overwrite all" Classes="Flat" Margin="0,0,8,8" Click="OverwriteAll_Click"/>
+            <Button Content="Overwrite" Classes="Flat Accent" Margin="0,0,0,8" Click="Overwrite_Click"/>
+        </WrapPanel>
+    </StackPanel>
+</suki:SukiWindow>
