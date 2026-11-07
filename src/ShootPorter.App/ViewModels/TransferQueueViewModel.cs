@@ -224,7 +224,7 @@ public partial class TransferQueueViewModel : ViewModelBase
             filtered = _selectedFilterKey switch
             {
                 TransferFilterKeys.Ready => filtered.Where(f => f.Status == FileTransferStatus.Pending),
-                TransferFilterKeys.Downloaded => filtered.Where(f => f.Status == FileTransferStatus.Completed),
+                TransferFilterKeys.Downloaded => filtered.Where(f => f.Status is FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded),
                 TransferFilterKeys.Conflicts => filtered.Where(f => f.Status == FileTransferStatus.NameClash),
                 TransferFilterKeys.Downloading => filtered.Where(f => f.Status == FileTransferStatus.Downloading),
                 TransferFilterKeys.Errors => filtered.Where(f => f.Status == FileTransferStatus.Error),
@@ -262,7 +262,7 @@ public partial class TransferQueueViewModel : ViewModelBase
             {
                 TransferFilterKeys.All => _allFiles.Count,
                 TransferFilterKeys.Ready => counts[(int)FileTransferStatus.Pending],
-                TransferFilterKeys.Downloaded => counts[(int)FileTransferStatus.Completed],
+                TransferFilterKeys.Downloaded => counts[(int)FileTransferStatus.Completed] + counts[(int)FileTransferStatus.AlreadyDownloaded],
                 TransferFilterKeys.Conflicts => counts[(int)FileTransferStatus.NameClash],
                 TransferFilterKeys.Downloading => counts[(int)FileTransferStatus.Downloading],
                 TransferFilterKeys.Errors => counts[(int)FileTransferStatus.Error],

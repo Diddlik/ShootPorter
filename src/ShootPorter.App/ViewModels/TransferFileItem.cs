@@ -17,7 +17,8 @@ public enum FileTransferStatus
     Downloading,
     Completed,
     NameClash,
-    Error
+    Error,
+    AlreadyDownloaded
 }
 
 /// <summary>
@@ -77,6 +78,7 @@ public partial class TransferFileItem : ObservableObject
         FileTransferStatus.Completed when SourceDisposition == SourceFileDisposition.Deleted => "Deleted",
         FileTransferStatus.Completed when SourceDisposition == SourceFileDisposition.Retained => "Retained",
         FileTransferStatus.Completed => "Completed",
+        FileTransferStatus.AlreadyDownloaded => "Already downloaded",
         FileTransferStatus.Downloading => "Downloading",
         FileTransferStatus.NameClash => "Name clash",
         FileTransferStatus.Error => "Error",
@@ -85,7 +87,7 @@ public partial class TransferFileItem : ObservableObject
 
     public string StatusIcon => Status switch
     {
-        FileTransferStatus.Completed => "Checkmark",
+        FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded => "Checkmark",
         FileTransferStatus.Downloading => "Sync",
         FileTransferStatus.NameClash => "Warning",
         FileTransferStatus.Error => "Dismiss",
@@ -94,7 +96,7 @@ public partial class TransferFileItem : ObservableObject
 
     public IBrush StatusBackground => Status switch
     {
-        FileTransferStatus.Completed => BrushCache.Get("#dcfce7"),
+        FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded => BrushCache.Get("#dcfce7"),
         FileTransferStatus.Downloading => BrushCache.Get("#dbeafe"),
         FileTransferStatus.NameClash => BrushCache.Get("#fef3c7"),
         FileTransferStatus.Error => BrushCache.Get("#fee2e2"),
@@ -103,7 +105,7 @@ public partial class TransferFileItem : ObservableObject
 
     public IBrush StatusBorder => Status switch
     {
-        FileTransferStatus.Completed => BrushCache.Get("#86efac"),
+        FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded => BrushCache.Get("#86efac"),
         FileTransferStatus.Downloading => BrushCache.Get("#93c5fd"),
         FileTransferStatus.NameClash => BrushCache.Get("#fcd34d"),
         FileTransferStatus.Error => BrushCache.Get("#fca5a5"),
@@ -112,7 +114,7 @@ public partial class TransferFileItem : ObservableObject
 
     public IBrush StatusForeground => Status switch
     {
-        FileTransferStatus.Completed => BrushCache.Get("#166534"),
+        FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded => BrushCache.Get("#166534"),
         FileTransferStatus.Downloading => BrushCache.Get("#1d4ed8"),
         FileTransferStatus.NameClash => BrushCache.Get("#92400e"),
         FileTransferStatus.Error => BrushCache.Get("#991b1b"),
@@ -121,7 +123,7 @@ public partial class TransferFileItem : ObservableObject
 
     public IBrush ProgressColor => Status switch
     {
-        FileTransferStatus.Completed => BrushCache.Get("#10b981"),
+        FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded => BrushCache.Get("#10b981"),
         FileTransferStatus.Downloading => BrushCache.Get("#3b82f6"),
         FileTransferStatus.NameClash => BrushCache.Get("#f59e0b"),
         _ => BrushCache.Get("#cbd5e1")

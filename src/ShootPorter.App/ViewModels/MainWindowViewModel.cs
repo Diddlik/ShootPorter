@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Serilog;
 using ShootPorter.App.Services;
+using ShootPorter.Core.Dedup;
 using ShootPorter.Core.Download;
 using ShootPorter.Core.Plugins;
 using ShootPorter.Core.Tokens;
@@ -27,6 +28,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private readonly TokenParser _tokenParser = new(new TokenRegistry());
     private readonly UpdateService _updateService = new();
     private CancellationTokenSource? _downloadCts;
+    private CancellationTokenSource? _dedupCts;
     private bool _disposed;
     private bool _syncingProfile;
 
@@ -178,6 +180,65 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
 
         TransferQueueViewModel.RecalculateStats();
         ConflictCount = TransferQueueViewModel.NameClashes;
+        _ = MarkAlreadyDownloadedAsync();
+    }
+
+    // A file whose planned target already exists with the same size and time was downloaded before.
+    private async Task MarkAlreadyDownloadedAsync()
+    {
+        _dedupCts?.Cancel();
+        _dedupCts?.Dispose();
+        if (IsDownloading)
+        {
+            _dedupCts = null;
+            return;
+        }
+
+        var cts = _dedupCts = new CancellationTokenSource();
+        var candidates = TransferQueueViewModel.AllFiles
+            .Where(f => f.Status is FileTransferStatus.Pending or FileTransferStatus.AlreadyDownloaded)
+            .Select(f => (File: f, f.SourcePath, f.DestinationPreview))
+            .ToList();
+
+        bool[] downloaded;
+        try
+        {
+            downloaded = await Task.Run(() => candidates.Select(c => IsAlreadyDownloaded(c.SourcePath, c.DestinationPreview, cts.Token)).ToArray(), cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        if (cts.IsCancellationRequested)
+            return;
+
+        for (var i = 0; i < candidates.Count; i++)
+        {
+            var file = candidates[i].File;
+            if (file.Status is not (FileTransferStatus.Pending or FileTransferStatus.AlreadyDownloaded))
+                continue;
+            file.Status = downloaded[i] ? FileTransferStatus.AlreadyDownloaded : FileTransferStatus.Pending;
+        }
+
+        TransferQueueViewModel.RecalculateStats();
+    }
+
+    private static bool IsAlreadyDownloaded(string sourcePath, string destinationPath, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        if (string.IsNullOrWhiteSpace(destinationPath))
+            return false;
+
+        try
+        {
+            return new FileComparer().Compare(sourcePath, destinationPath).Status == FileStatus.Downloaded;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Log.Warning(ex, "Checking {DestinationPath} for an earlier download failed", destinationPath);
+            return false;
+        }
     }
 
     private IReadOnlyList<PlannedDestination> PlanDestinations(IReadOnlyList<TransferFileItem> files, int firstIndex)
@@ -297,6 +358,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         SourcePicker.Dispose();
         // The running download owns and disposes its source.
         _downloadCts?.Cancel();
+        _dedupCts?.Cancel();
+        _dedupCts?.Dispose();
         GC.SuppressFinalize(this);
     }
 }
