@@ -40,6 +40,14 @@ public sealed class TokenParserTests
     }
 
     [Fact]
+    public void WhenTokenValueContainsPathCharactersThenTheyAreReplaced()
+    {
+        var ctx = CreateContext(jobCode: "f/2.8 12:30");
+        var result = _parser.Parse(@"{Y}\{J}", ctx);
+        Assert.Equal(@"2025\f-2.8 12-30", result);
+    }
+
+    [Fact]
     public void WhenParsingUnknownTokenThenLeavesAsIs()
     {
         var ctx = CreateContext();

@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using ShootPorter.Core.Metadata;
 
 namespace ShootPorter.Core.Tokens;
 
@@ -40,6 +41,41 @@ public sealed partial record TokenContext(
 
     // Locale for formatting
     public System.Globalization.CultureInfo Culture { get; init; } = System.Globalization.CultureInfo.CurrentCulture;
+
+    /// <summary>
+    /// Builds a context for a source file from its path and (optional) metadata.
+    /// </summary>
+    public static TokenContext ForFile(
+        string filePath,
+        FileMetadata? metadata,
+        DateTimeOffset captureDateTime,
+        string? jobCode,
+        int sequenceNumber,
+        IReadOnlyDictionary<string, string> cameraMappings)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+        ArgumentNullException.ThrowIfNull(cameraMappings);
+
+        var originalFileName = Path.GetFileNameWithoutExtension(filePath);
+        var sourceFolderName = Path.GetFileName(Path.GetDirectoryName(filePath)) ?? string.Empty;
+
+        return new TokenContext(captureDateTime, originalFileName, Path.GetExtension(filePath), jobCode, sequenceNumber,
+            new Dictionary<string, string>())
+        {
+            ImageNumber = ExtractImageNumber(originalFileName),
+            SourceFolderName = sourceFolderName,
+            SourceFolderNumber = ExtractImageNumber(sourceFolderName),
+            CameraManufacturer = metadata?.CameraManufacturer,
+            CameraModel = metadata?.CameraModel,
+            CameraSerialNumber = metadata?.CameraSerialNumber,
+            IsoSpeed = metadata?.IsoSpeed,
+            Aperture = metadata?.Aperture,
+            ShutterSpeed = metadata?.ShutterSpeed,
+            Copyright = metadata?.Copyright,
+            Owner = metadata?.Artist,
+            CameraMappings = cameraMappings,
+        };
+    }
 
     /// <summary>
     /// Extracts the trailing numeric sequence from a filename (e.g. "DSC_0312" → "0312").

@@ -21,6 +21,14 @@ public sealed class SupportedFormatsTests
     [InlineData(".gpr")]
     [InlineData(".tiff")]
     [InlineData(".tif")]
+    [InlineData(".heic")]
+    [InlineData(".heif")]
+    [InlineData(".rw2")]
+    [InlineData(".nrw")]
+    [InlineData(".srw")]
+    [InlineData(".3fr")]
+    [InlineData(".iiq")]
+    [InlineData(".png")]
     public void WhenCheckingImageExtensionThenIsImage(string ext)
     {
         Assert.True(SupportedFormats.IsImage(ext));
@@ -47,7 +55,6 @@ public sealed class SupportedFormatsTests
     [InlineData(".txt")]
     [InlineData(".pdf")]
     [InlineData(".exe")]
-    [InlineData(".png")]
     [InlineData(".doc")]
     public void WhenCheckingUnsupportedExtensionThenNotSupported(string ext)
     {

@@ -1,3 +1,4 @@
+using Serilog;
 namespace ShootPorter.Core.Discovery;
 
 /// <summary>
@@ -75,8 +76,9 @@ public sealed class DriveWatcherService : IDisposable
                 .Select(d => d.Name)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
-        catch
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            Log.Warning(ex, "Removable drive enumeration failed");
             return [];
         }
     }

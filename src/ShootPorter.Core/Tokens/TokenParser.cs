@@ -1,5 +1,6 @@
 namespace ShootPorter.Core.Tokens;
 
+using System.Buffers;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -9,6 +10,8 @@ using System.Text.RegularExpressions;
 /// </summary>
 public sealed partial class TokenParser
 {
+    private static readonly SearchValues<char> InvalidValueChars = SearchValues.Create("<>:\"/\\|?*");
+
     private readonly TokenRegistry _registry;
 
     public TokenParser(TokenRegistry registry)
@@ -28,42 +31,65 @@ public sealed partial class TokenParser
 
         return TokenPattern().Replace(template, match =>
         {
-            var raw = match.Groups[1].Value;
-
-            // Handle string functions first
-            if (TryResolveStringFunction(raw, context, out var functionResult))
-                return functionResult;
-
-            // Handle file[...] syntax
-            if (TryResolveFileSlice(raw, context, out var fileResult))
-                return fileResult;
-
-            var colonIndex = raw.IndexOf(':');
-
-            string tokenName;
-            string? format;
-
-            if (colonIndex >= 0)
-            {
-                tokenName = raw[..colonIndex];
-                format = raw[(colonIndex + 1)..];
-            }
-            else
-            {
-                tokenName = raw;
-                format = null;
-            }
-
-            var resolved = _registry.Resolve(tokenName, context);
-            if (resolved is null)
-                return match.Value; // leave unknown tokens as-is
-
-            // Apply format if specified and value is numeric
-            if (format is not null && int.TryParse(resolved, out var numericValue))
-                return numericValue.ToString(format);
-
-            return resolved;
+            var resolved = ResolveMatch(match, context);
+            return ReferenceEquals(resolved, match.Value) ? resolved : SanitizeValue(resolved);
         });
+    }
+
+    /// <summary>
+    /// Replaces characters that are invalid in file or folder names (on any supported OS) with '-',
+    /// so a token value like "f/2.8" or "12:30" cannot create subfolders or break the path.
+    /// Path separators written literally in the template are not affected.
+    /// </summary>
+    private static string SanitizeValue(string value)
+    {
+        if (value.AsSpan().IndexOfAny(InvalidValueChars) < 0 && !value.Any(char.IsControl))
+            return value;
+
+        return string.Create(value.Length, value, static (span, v) =>
+        {
+            for (var i = 0; i < v.Length; i++)
+                span[i] = InvalidValueChars.Contains(v[i]) || char.IsControl(v[i]) ? '-' : v[i];
+        });
+    }
+
+    private string ResolveMatch(Match match, TokenContext context)
+    {
+        var raw = match.Groups[1].Value;
+
+        // Handle string functions first
+        if (TryResolveStringFunction(raw, context, out var functionResult))
+            return functionResult;
+
+        // Handle file[...] syntax
+        if (TryResolveFileSlice(raw, context, out var fileResult))
+            return fileResult;
+
+        var colonIndex = raw.IndexOf(':');
+
+        string tokenName;
+        string? format;
+
+        if (colonIndex >= 0)
+        {
+            tokenName = raw[..colonIndex];
+            format = raw[(colonIndex + 1)..];
+        }
+        else
+        {
+            tokenName = raw;
+            format = null;
+        }
+
+        var resolved = _registry.Resolve(tokenName, context);
+        if (resolved is null)
+            return match.Value; // leave unknown tokens as-is
+
+        // Apply format if specified and value is numeric
+        if (format is not null && int.TryParse(resolved, out var numericValue))
+            return numericValue.ToString(format);
+
+        return resolved;
     }
 
     private bool TryResolveStringFunction(string raw, TokenContext context, out string result)
@@ -258,8 +284,9 @@ public sealed partial class TokenParser
             var region = new RegionInfo(code);
             return region.EnglishName;
         }
-        catch
+        catch (ArgumentException)
         {
+            // Not a known region code; show it unchanged.
             return code;
         }
     }

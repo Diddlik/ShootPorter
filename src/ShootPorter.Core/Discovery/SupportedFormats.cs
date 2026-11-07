@@ -8,7 +8,8 @@ namespace ShootPorter.Core.Discovery;
 public static class SupportedFormats
 {
     private static readonly FrozenSet<string> ImageExtensions = FrozenSet.ToFrozenSet(
-        new[] { ".jpg", ".jpeg", ".tiff", ".tif", ".cr2", ".cr3", ".nef", ".arw", ".dng", ".raf", ".orf", ".pef", ".gpr" },
+        new[] { ".jpg", ".jpeg", ".tiff", ".tif", ".cr2", ".cr3", ".nef", ".arw", ".dng", ".raf", ".orf", ".pef", ".gpr",
+                ".heic", ".heif", ".rw2", ".nrw", ".srw", ".3fr", ".iiq", ".png" },
         StringComparer.OrdinalIgnoreCase);
 
     private static readonly FrozenSet<string> VideoExtensions = FrozenSet.ToFrozenSet(

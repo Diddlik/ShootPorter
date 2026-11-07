@@ -1,13 +1,18 @@
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
+using MetadataExtractor.Formats.QuickTime;
 
 namespace ShootPorter.Core.Metadata;
 
 /// <summary>
 /// Reads EXIF, IPTC, and XMP metadata from image and video files using the MetadataExtractor library.
 /// </summary>
-public sealed class MetadataReader : IMetadataReader
+/// <param name="videoTimeIsLocal">
+/// Treat the QuickTime movie header date as local time. The spec (and phones) use UTC,
+/// but many cameras write local time there.
+/// </param>
+public sealed class MetadataReader(bool videoTimeIsLocal = false) : IMetadataReader
 {
     public Task<FileMetadata> ReadMetadataAsync(string filePath, CancellationToken cancellationToken = default)
     {
@@ -18,7 +23,7 @@ public sealed class MetadataReader : IMetadataReader
         return Task.Run(() => ReadMetadataCore(filePath), cancellationToken);
     }
 
-    private static FileMetadata ReadMetadataCore(string filePath)
+    private FileMetadata ReadMetadataCore(string filePath)
     {
         var directories = ImageMetadataReader.ReadMetadata(filePath);
 
@@ -26,14 +31,16 @@ public sealed class MetadataReader : IMetadataReader
         var exifSubIfd = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
         var gpsDir = directories.OfType<GpsDirectory>().FirstOrDefault();
         var iptcDir = directories.OfType<IptcDirectory>().FirstOrDefault();
+        var movieHeader = directories.OfType<QuickTimeMovieHeaderDirectory>().FirstOrDefault();
 
         return new FileMetadata
         {
             FilePath = filePath,
-            CaptureDateTime = ExtractDateTime(exifSubIfd, exifIfd0),
+            CaptureDateTime = ExtractDateTime(exifSubIfd, exifIfd0) ?? ExtractVideoDateTime(movieHeader),
             CameraManufacturer = exifIfd0?.GetDescription(ExifDirectoryBase.TagMake)?.Trim(),
             CameraModel = exifIfd0?.GetDescription(ExifDirectoryBase.TagModel)?.Trim(),
-            CameraSerialNumber = exifIfd0?.GetDescription(ExifDirectoryBase.TagBodySerialNumber)?.Trim(),
+            CameraSerialNumber = (exifSubIfd?.GetDescription(ExifDirectoryBase.TagBodySerialNumber)
+                                  ?? exifIfd0?.GetDescription(ExifDirectoryBase.TagBodySerialNumber))?.Trim(),
             IsoSpeed = GetIsoSpeed(exifSubIfd),
             Aperture = exifSubIfd?.GetDescription(ExifDirectoryBase.TagFNumber),
             ShutterSpeed = exifSubIfd?.GetDescription(ExifDirectoryBase.TagExposureTime),
@@ -60,6 +67,18 @@ public sealed class MetadataReader : IMetadataReader
             return new DateTimeOffset(dt);
 
         return null;
+    }
+
+    private DateTimeOffset? ExtractVideoDateTime(QuickTimeMovieHeaderDirectory? movieHeader)
+    {
+        // QuickTime stores seconds since 1904; 0 means the camera did not set it.
+        if (movieHeader?.TryGetDateTime(QuickTimeMovieHeaderDirectory.TagCreated, out var created) != true
+            || created.Year < 1971)
+            return null;
+
+        return videoTimeIsLocal
+            ? new DateTimeOffset(DateTime.SpecifyKind(created, DateTimeKind.Unspecified))
+            : new DateTimeOffset(DateTime.SpecifyKind(created, DateTimeKind.Utc)).ToLocalTime();
     }
 
     private static int? GetIsoSpeed(ExifSubIfdDirectory? subIfd)
