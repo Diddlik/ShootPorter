@@ -19,4 +19,13 @@ public sealed record DownloadOptions
 
     /// <summary>Optional backup destination paths. Files are copied here in addition to the primary destination.</summary>
     public IReadOnlyList<string> BackupDestinations { get; init; } = [];
+
+    /// <summary>Whether to delete source files after a verified primary copy and all backup copies succeed.</summary>
+    public bool AutoDeleteSource { get; init; }
+
+    /// <summary>
+    /// Asked for every target path that already exists on disk. Calls are serialized by the caller's resolver.
+    /// When not set, existing files are kept and the new file gets a unique suffix.
+    /// </summary>
+    public Func<string, CancellationToken, Task<ConflictResolution>>? ResolveExistingFile { get; init; }
 }

@@ -8,4 +8,6 @@ public sealed record DownloadResult(
     string DestinationPath,
     bool Success,
     long BytesCopied,
-    string? ErrorMessage = null);
+    string? ErrorMessage = null,
+    SourceFileDisposition SourceDisposition = SourceFileDisposition.NotRequested,
+    string? SourceDispositionMessage = null);

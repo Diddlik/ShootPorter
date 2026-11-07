@@ -1,3 +1,4 @@
+using Serilog;
 namespace ShootPorter.Core.Download;
 
 /// <summary>
@@ -7,7 +8,8 @@ public sealed class FileCopier
 {
     /// <summary>
     /// Copies a single file from source to destination with progress reporting.
-    /// Creates destination directory if it doesn't exist.
+    /// Creates destination directory if it doesn't exist. An existing destination is only replaced when
+    /// <paramref name="overwrite"/> is set; the copy then goes to a temp file first, so a failed copy keeps the original.
     /// </summary>
     public async Task<DownloadResult> CopyFileAsync(
         string sourcePath,
@@ -17,11 +19,14 @@ public sealed class FileCopier
         IProgress<DownloadProgress>? progress,
         int fileIndex,
         int totalFiles,
+        bool overwrite = false,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(sourcePath);
         ArgumentException.ThrowIfNullOrWhiteSpace(destinationPath);
 
+        var writePath = overwrite ? destinationPath + ".shootporter.tmp" : destinationPath;
+        var createdDestination = false;
         try
         {
             var sourceInfo = new FileInfo(sourcePath);
@@ -41,8 +46,9 @@ public sealed class FileCopier
                 bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan);
 
             await using var destStream = new FileStream(
-                destinationPath, FileMode.Create, FileAccess.Write, FileShare.None,
+                writePath, overwrite ? FileMode.Create : FileMode.CreateNew, FileAccess.Write, FileShare.None,
                 bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan);
+            createdDestination = true;
 
             var buffer = new byte[bufferSize];
             int bytesRead;
@@ -57,36 +63,51 @@ public sealed class FileCopier
             }
 
             await destStream.FlushAsync(cancellationToken).ConfigureAwait(false);
+            await destStream.DisposeAsync().ConfigureAwait(false);
 
             // Verify after copy
             if (verifyAfterCopy)
             {
-                var destInfo = new FileInfo(destinationPath);
+                var destInfo = new FileInfo(writePath);
                 if (destInfo.Length != totalBytes)
+                {
+                    TryDeleteFile(writePath);
                     return new DownloadResult(sourcePath, destinationPath, false, bytesCopied,
                         $"Size mismatch after copy: expected {totalBytes}, got {destInfo.Length}");
+                }
             }
 
             // Preserve last write time
-            File.SetLastWriteTimeUtc(destinationPath, sourceInfo.LastWriteTimeUtc);
+            File.SetLastWriteTimeUtc(writePath, sourceInfo.LastWriteTimeUtc);
+            if (overwrite)
+                File.Move(writePath, destinationPath, overwrite: true);
 
             return new DownloadResult(sourcePath, destinationPath, true, bytesCopied);
         }
         catch (OperationCanceledException)
         {
-            // Clean up partial file on cancellation
-            TryDeleteFile(destinationPath);
+            if (createdDestination)
+                TryDeleteFile(writePath);
             throw;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            TryDeleteFile(destinationPath);
+            Log.Error(ex, "Copying {SourcePath} to {DestinationPath} failed", sourcePath, destinationPath);
+            if (createdDestination)
+                TryDeleteFile(writePath);
             return new DownloadResult(sourcePath, destinationPath, false, 0, ex.Message);
         }
     }
 
     private static void TryDeleteFile(string path)
     {
-        try { File.Delete(path); } catch { /* best-effort cleanup */ }
+        try
+        {
+            File.Delete(path);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Log.Warning(ex, "Removing partial file {Path} failed", path);
+        }
     }
 }
