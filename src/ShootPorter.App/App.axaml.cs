@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ShootPorter.App.ViewModels;
+using ShootPorter.Core.Cli;
 using ShootPorter.App.Views;
 
 namespace ShootPorter.App;
@@ -18,7 +19,7 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var mainWindow = new MainWindow();
-            var viewModel = new MainWindowViewModel();
+            var viewModel = new MainWindowViewModel(new CliParser().Parse(desktop.Args ?? []));
             viewModel.ShowUpdateDialog = vm =>
             {
                 var dialog = new UpdateDialog(vm);

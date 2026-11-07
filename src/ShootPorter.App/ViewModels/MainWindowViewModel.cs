@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Serilog;
 using ShootPorter.App.Services;
+using ShootPorter.Core.Cli;
 using ShootPorter.Core.Dedup;
 using ShootPorter.Core.Download;
 using ShootPorter.Core.Plugins;
@@ -31,6 +32,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private CancellationTokenSource? _dedupCts;
     private bool _disposed;
     private bool _syncingProfile;
+    private readonly CliOptions _startup;
 
     [ObservableProperty]
     private bool _isDownloading;
@@ -42,8 +44,14 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [NotifyPropertyChangedFor(nameof(HasConflicts))]
     private int _conflictCount;
 
-    public MainWindowViewModel()
+    public MainWindowViewModel() : this(new CliOptions())
     {
+    }
+
+    /// <param name="startup">Command-line options (AutoPlay passes the inserted drive as <c>--source</c>).</param>
+    public MainWindowViewModel(CliOptions startup)
+    {
+        _startup = startup;
         SourcePicker = new SourcePickerViewModel(SettingsViewModel, TransferQueueViewModel);
         SourcePicker.ScanCompleted += OnScanCompleted;
         SourcePicker.FilesAdded += OnFilesAdded;
@@ -90,6 +98,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             {
                 SelectedProfile = SettingsViewModel.SelectedProfile ?? Profiles.FirstOrDefault();
                 SourcePicker.LoadSourceHistory();
+                ApplyStartupOptions();
             });
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -98,6 +107,21 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         }
 
         await CheckForUpdateAsync();
+    }
+
+    private void ApplyStartupOptions()
+    {
+        if (_startup.ProfileName is { } profileName
+            && Profiles.FirstOrDefault(p => p.Name.Equals(profileName, StringComparison.OrdinalIgnoreCase)) is { } profile)
+            SelectedProfile = profile;
+        else if (_startup.ProfileName is not null)
+            Log.Warning("Profile {Profile} from the command line does not exist", _startup.ProfileName);
+
+        if (!string.IsNullOrWhiteSpace(_startup.JobCode))
+            SettingsViewModel.JobCode = _startup.JobCode;
+
+        if (!string.IsNullOrWhiteSpace(_startup.SourcePath))
+            SourcePicker.AddCustomFolder(_startup.SourcePath);
     }
 
     private async Task CheckForUpdateAsync()
