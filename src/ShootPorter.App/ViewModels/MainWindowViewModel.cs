@@ -166,6 +166,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         for (var i = 0; i < allFiles.Count; i++)
         {
             var file = allFiles[i];
+            // A finished file shows where it went, not where it would go now.
+            if (file.Status == FileTransferStatus.Completed)
+                continue;
             file.DestinationPreview = planned[i].Path;
             if (planned[i].IsClash)
                 file.Status = FileTransferStatus.NameClash;
@@ -244,11 +247,28 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         try
         {
             await new DownloadSession(TransferQueueViewModel, pendingFiles).RunAsync(options, downloadCts.Token);
+            await SettingsViewModel.RecordJobCodeUsedAsync();
+            AdvanceSequence(pendingFiles);
         }
         finally
         {
             _downloadCts = null;
             IsDownloading = false;
+        }
+    }
+
+    // Numbers are assigned by queue position, so the next batch starts after the last number used.
+    private void AdvanceSequence(IReadOnlyList<TransferFileItem> batch)
+    {
+        var batchSet = batch.ToHashSet();
+        var allFiles = TransferQueueViewModel.AllFiles;
+        for (var i = allFiles.Count - 1; i >= 0; i--)
+        {
+            if (allFiles[i].Status == FileTransferStatus.Completed && batchSet.Contains(allFiles[i]))
+            {
+                SettingsViewModel.SequenceStart += i + 1;
+                return;
+            }
         }
     }
 

@@ -86,6 +86,12 @@ public sealed record AppSettings
     [JsonPropertyName("recentSourcePaths")]
     public IReadOnlyList<string> RecentSourcePaths { get; init; } = [];
 
+    [JsonPropertyName("jobCode")]
+    public string JobCode { get; init; } = string.Empty;
+
+    [JsonPropertyName("sequenceStart")]
+    public int SequenceStart { get; init; } = 1;
+
     // Profiles
     [JsonPropertyName("profiles")]
     public IReadOnlyList<SavedProfile> Profiles { get; init; } = [];

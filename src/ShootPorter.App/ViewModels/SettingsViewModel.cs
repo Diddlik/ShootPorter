@@ -33,6 +33,7 @@ public partial class SettingsViewModel : ViewModelBase
         Path.Combine(SettingsDirectory, "settings.json");
 
     private readonly AppSettingsStore _settingsStore = new(SettingsFilePath);
+    private readonly JobCodeHistory _jobCodeHistory = new(Path.Combine(SettingsDirectory, "jobcodes.json"));
     private readonly TokenRegistry _tokenRegistry = new();
     private readonly TokenParser _tokenParser;
 
@@ -176,6 +177,15 @@ public partial class SettingsViewModel : ViewModelBase
     {
         var settings = await _settingsStore.LoadAsync();
         ApplySettings(settings);
+        try
+        {
+            await _jobCodeHistory.LoadAsync();
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            Log.Warning(ex, "Job code history is unreadable; starting empty");
+        }
+        RefreshRecentJobCodes();
     }
 
     partial void OnDestinationTemplateChanged(string value)
@@ -201,6 +211,38 @@ public partial class SettingsViewModel : ViewModelBase
     partial void OnJobCodeChanged(string value)
     {
         OnPropertyChanged(nameof(PreviewPath));
+        ScheduleSave();
+    }
+
+    partial void OnSequenceStartChanged(int value) => ScheduleSave();
+
+    public ObservableCollection<string> RecentJobCodes { get; } = [];
+
+    /// <summary>
+    /// Records the current job code as used and persists the history.
+    /// </summary>
+    public async Task RecordJobCodeUsedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(JobCode))
+            return;
+
+        _jobCodeHistory.Record(JobCode.Trim());
+        RefreshRecentJobCodes();
+        try
+        {
+            await _jobCodeHistory.SaveAsync();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Log.Warning(ex, "Saving the job code history failed");
+        }
+    }
+
+    private void RefreshRecentJobCodes()
+    {
+        RecentJobCodes.Clear();
+        foreach (var code in _jobCodeHistory.GetRecent())
+            RecentJobCodes.Add(code);
     }
 
     partial void OnCheckForUpdatesChanged(bool value) => ScheduleSave();
@@ -450,6 +492,8 @@ public partial class SettingsViewModel : ViewModelBase
             DisablePtpDownloads = settings.DisablePtpDownloads;
             UseCaptureTime = settings.UseCaptureTime;
             VideoTimeIsLocal = settings.VideoTimeIsLocal;
+            JobCode = settings.JobCode;
+            SequenceStart = Math.Max(1, settings.SequenceStart);
             AutoEjectMedia = settings.AutoEjectMedia;
             SaveReadOnly = settings.SaveReadOnly;
             AutoRotateJpegs = settings.AutoRotateJpegs;
@@ -522,6 +566,8 @@ public partial class SettingsViewModel : ViewModelBase
         DisablePtpDownloads = DisablePtpDownloads,
         UseCaptureTime = UseCaptureTime,
         VideoTimeIsLocal = VideoTimeIsLocal,
+        JobCode = JobCode,
+        SequenceStart = SequenceStart,
         AutoEjectMedia = AutoEjectMedia,
         SaveReadOnly = SaveReadOnly,
         AutoRotateJpegs = AutoRotateJpegs,

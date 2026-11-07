@@ -124,7 +124,7 @@
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="24">
                     <StackPanel Spacing="6">
                         <TextBlock Text="Job Code {J}" FontWeight="SemiBold"/>
-                        <TextBox Text="{Binding JobCode}"/>
+                        <AutoCompleteBox Text="{Binding JobCode}" ItemsSource="{Binding RecentJobCodes}" FilterMode="StartsWith" MinimumPrefixLength="0"/>
                         <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
                             <ToggleSwitch IsChecked="{Binding PromptForJobCode}" OnContent="" OffContent=""/>
                             <TextBlock Text="Prompt for Job code on run" VerticalAlignment="Center" FontSize="12"/>
