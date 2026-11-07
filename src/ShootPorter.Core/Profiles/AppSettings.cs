@@ -64,6 +64,19 @@ public sealed record AppSettings
     [JsonPropertyName("customScriptPath")]
     public string CustomScriptPath { get; init; } = string.Empty;
 
+    // Post-download plugins
+    [JsonPropertyName("convertToDng")]
+    public bool ConvertToDng { get; init; }
+
+    [JsonPropertyName("dngConverterPath")]
+    public string DngConverterPath { get; init; } = string.Empty;
+
+    [JsonPropertyName("createSubfolders")]
+    public bool CreateSubfolders { get; init; }
+
+    [JsonPropertyName("subfolderNames")]
+    public string SubfolderNames { get; init; } = "originals, edited, exports";
+
     // Download
     [JsonPropertyName("backupPath1")]
     public string BackupPath1 { get; init; } = string.Empty;

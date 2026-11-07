@@ -11,6 +11,7 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShootPorter.Core.Metadata;
+using ShootPorter.Core.Plugins;
 using ShootPorter.Core.Profiles;
 using ShootPorter.Core.Tokens;
 using Serilog;
@@ -133,6 +134,18 @@ public partial class SettingsViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _customScriptPath = @"P:\AppZ\Scripts\exif.cmd";
+
+    [ObservableProperty]
+    private bool _convertToDng;
+
+    [ObservableProperty]
+    private string _dngConverterPath = string.Empty;
+
+    [ObservableProperty]
+    private bool _createSubfolders;
+
+    [ObservableProperty]
+    private string _subfolderNames = "originals, edited, exports";
 
     // Legacy properties for compatibility
     [ObservableProperty]
@@ -263,6 +276,24 @@ public partial class SettingsViewModel : ViewModelBase
     partial void OnEnableCustomButtonChanged(bool value) => ScheduleSave();
     partial void OnCustomButtonCaptionChanged(string value) => ScheduleSave();
     partial void OnCustomScriptPathChanged(string value) => ScheduleSave();
+    partial void OnConvertToDngChanged(bool value) => ScheduleSave();
+    partial void OnDngConverterPathChanged(string value) => ScheduleSave();
+    partial void OnCreateSubfoldersChanged(bool value) => ScheduleSave();
+    partial void OnSubfolderNamesChanged(string value) => ScheduleSave();
+
+    /// <summary>
+    /// Builds the post-download plugins enabled in the settings.
+    /// </summary>
+    public PluginManager BuildPluginManager()
+    {
+        var manager = new PluginManager();
+        var subfolders = SubfolderNames.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (CreateSubfolders && subfolders.Length > 0)
+            manager.Register(new DirectoryMakerPlugin(subfolders));
+        if (ConvertToDng)
+            manager.Register(new DngConverterPlugin(DngConverterPath) { IsEnabled = true });
+        return manager;
+    }
     partial void OnBackupPath1Changed(string value) => ScheduleSave();
     partial void OnBackupPath2Changed(string value) => ScheduleSave();
     partial void OnMaxParallelismChanged(int value) => ScheduleSave();
@@ -504,6 +535,10 @@ public partial class SettingsViewModel : ViewModelBase
             EnableCustomButton = settings.EnableCustomButton;
             CustomButtonCaption = settings.CustomButtonCaption;
             CustomScriptPath = settings.CustomScriptPath;
+            ConvertToDng = settings.ConvertToDng;
+            DngConverterPath = settings.DngConverterPath;
+            CreateSubfolders = settings.CreateSubfolders;
+            SubfolderNames = settings.SubfolderNames;
             BackupPath1 = settings.BackupPath1;
             BackupPath2 = settings.BackupPath2;
             MaxParallelism = settings.MaxParallelism;
@@ -578,6 +613,10 @@ public partial class SettingsViewModel : ViewModelBase
         EnableCustomButton = EnableCustomButton,
         CustomButtonCaption = CustomButtonCaption,
         CustomScriptPath = CustomScriptPath,
+        ConvertToDng = ConvertToDng,
+        DngConverterPath = DngConverterPath,
+        CreateSubfolders = CreateSubfolders,
+        SubfolderNames = SubfolderNames,
         BackupPath1 = BackupPath1,
         BackupPath2 = BackupPath2,
         MaxParallelism = MaxParallelism,

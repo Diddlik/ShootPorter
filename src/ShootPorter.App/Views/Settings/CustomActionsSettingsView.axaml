@@ -38,5 +38,28 @@
                 </StackPanel>
             </StackPanel>
         </suki:GlassCard>
+
+        <suki:GlassCard>
+            <StackPanel Spacing="16">
+                <TextBlock Text="After Download" FontWeight="SemiBold" FontSize="14"/>
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <ToggleSwitch IsChecked="{Binding CreateSubfolders}" OnContent="" OffContent=""/>
+                    <TextBlock Text="Create subfolders next to downloaded files" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Spacing="6" IsEnabled="{Binding CreateSubfolders}">
+                    <TextBlock Text="Subfolder names (comma separated)" FontWeight="SemiBold"/>
+                    <TextBox Text="{Binding SubfolderNames}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <ToggleSwitch IsChecked="{Binding ConvertToDng}" OnContent="" OffContent=""/>
+                    <TextBlock Text="Convert RAW files to DNG (Adobe DNG Converter)" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Spacing="6" IsEnabled="{Binding ConvertToDng}">
+                    <TextBlock Text="DNG Converter path (empty: default install location)" FontWeight="SemiBold"/>
+                    <TextBox Text="{Binding DngConverterPath}" FontFamily="Consolas,Courier New,monospace"/>
+                </StackPanel>
+            </StackPanel>
+        </suki:GlassCard>
     </StackPanel>
 </UserControl>

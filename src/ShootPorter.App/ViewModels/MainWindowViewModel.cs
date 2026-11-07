@@ -308,6 +308,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         try
         {
             await new DownloadSession(TransferQueueViewModel, pendingFiles).RunAsync(options, downloadCts.Token);
+            await RunPluginsAsync(pendingFiles, downloadCts.Token);
             await SettingsViewModel.RecordJobCodeUsedAsync();
             AdvanceSequence(pendingFiles);
         }
@@ -315,6 +316,32 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         {
             _downloadCts = null;
             IsDownloading = false;
+        }
+    }
+
+    private async Task RunPluginsAsync(IReadOnlyList<TransferFileItem> batch, CancellationToken ct)
+    {
+        var plugins = SettingsViewModel.BuildPluginManager();
+        if (plugins.Plugins.Count == 0)
+            return;
+
+        try
+        {
+            foreach (var file in batch.Where(f => f.Status == FileTransferStatus.Completed))
+            {
+                var path = file.DestinationPreview;
+                var results = await Task.Run(() => plugins.RunAllAsync(path, ct), ct);
+                var failed = results.Where(r => !r.Success).Select(r => r.PluginName).ToList();
+                if (failed.Count > 0)
+                {
+                    Log.Warning("Post-download plugins {Plugins} failed for {FilePath}", failed, path);
+                    file.StatusDetail = $"Failed: {string.Join(", ", failed)}";
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Log.Information("Post-download plugins cancelled");
         }
     }
 
