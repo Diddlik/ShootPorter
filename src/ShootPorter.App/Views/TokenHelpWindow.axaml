@@ -1,12 +1,13 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="using:ShootPorter.App.Properties"
         xmlns:vm="using:ShootPorter.App.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="800"
         x:Class="ShootPorter.App.Views.TokenHelpWindow"
         x:DataType="vm:TokenHelpViewModel"
-        Title="Token Reference"
+        Title="{x:Static p:Resources.TokenReference}"
         Width="750" Height="800"
         MinWidth="600" MinHeight="400"
         WindowStartupLocation="CenterOwner"
@@ -19,8 +20,8 @@
     <Grid Margin="16" RowDefinitions="Auto,*,Auto">
         <!-- Header -->
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-            <TextBlock Text="Token Reference" FontSize="22" FontWeight="Bold"/>
-            <TextBlock Text="Use these tokens in your filename template to generate dynamic filenames" 
+            <TextBlock Text="{x:Static p:Resources.TokenReference}" FontSize="22" FontWeight="Bold"/>
+            <TextBlock Text="{x:Static p:Resources.UseTheseTokensInYourFilename}" 
                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"/>
         </StackPanel>
 
@@ -36,9 +37,9 @@
                                 
                                 <!-- Token Grid Header -->
                                 <Grid ColumnDefinitions="120,*,150" Margin="0,0,0,4">
-                                    <TextBlock Grid.Column="0" Text="TOKEN" FontWeight="SemiBold" FontSize="10" Opacity="0.6"/>
-                                    <TextBlock Grid.Column="1" Text="DESCRIPTION" FontWeight="SemiBold" FontSize="10" Opacity="0.6"/>
-                                    <TextBlock Grid.Column="2" Text="EXAMPLE" FontWeight="SemiBold" FontSize="10" Opacity="0.6"/>
+                                    <TextBlock Grid.Column="0" Text="{x:Static p:Resources.TOKEN}" FontWeight="SemiBold" FontSize="10" Opacity="0.6"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Static p:Resources.DESCRIPTION}" FontWeight="SemiBold" FontSize="10" Opacity="0.6"/>
+                                    <TextBlock Grid.Column="2" Text="{x:Static p:Resources.EXAMPLE}" FontWeight="SemiBold" FontSize="10" Opacity="0.6"/>
                                 </Grid>
                                 
                                 <Rectangle Height="1" Fill="#e2e8f0" Margin="0,0,0,4"/>
@@ -79,10 +80,10 @@
 
         <!-- Footer -->
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,16,0,0">
-            <TextBlock Text="Tip: Tokens can be combined, e.g. {Y}{m}{D}_{H}{M}{S}_{T8}" 
+            <TextBlock Text="{x:Static p:Resources.TokenTip}" 
                        FontSize="11" Opacity="0.6" VerticalAlignment="Center"
                        FontStyle="Italic"/>
-            <Button Grid.Column="1" Content="Close" Padding="24,8" Click="CloseButton_Click"/>
+            <Button Grid.Column="1" Content="{x:Static p:Resources.Close}" Padding="24,8" Click="CloseButton_Click"/>
         </Grid>
     </Grid>
 </Window>

@@ -1,3 +1,4 @@
+using ShootPorter.App.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -359,7 +360,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 if (failed.Count > 0)
                 {
                     Log.Warning("Post-download plugins {Plugins} failed for {FilePath}", failed, path);
-                    file.StatusDetail = $"Failed: {string.Join(", ", failed)}";
+                    file.StatusDetail = string.Format(Resources.PluginsFailed, string.Join(", ", failed));
                 }
             }
         }

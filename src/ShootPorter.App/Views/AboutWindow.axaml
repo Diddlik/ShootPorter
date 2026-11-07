@@ -1,5 +1,6 @@
 <suki:SukiWindow xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="using:ShootPorter.App.Properties"
         xmlns:vm="using:ShootPorter.App.ViewModels"
         xmlns:suki="using:SukiUI.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,7 +8,7 @@
         mc:Ignorable="d"
         x:Class="ShootPorter.App.Views.AboutWindow"
         x:DataType="vm:AboutViewModel"
-        Title="About ShootPorter"
+        Title="{x:Static p:Resources.AboutShootPorter}"
         Width="460" Height="480"
         CanMinimize="False" CanResize="False"
         WindowStartupLocation="CenterOwner">
@@ -22,7 +23,7 @@
 
             <!-- App Name & Version -->
             <StackPanel Spacing="4" HorizontalAlignment="Center">
-                <TextBlock Text="ShootPorter" FontSize="24" FontWeight="Bold"
+                <TextBlock Text="{x:Static p:Resources.ShootPorter}" FontSize="24" FontWeight="Bold"
                            HorizontalAlignment="Center"/>
                 <TextBlock Text="{Binding AppVersion, StringFormat='Version {0}'}"
                            FontSize="13" Opacity="0.6" HorizontalAlignment="Center"/>
@@ -32,11 +33,11 @@
 
             <!-- Description -->
             <TextBlock TextWrapping="Wrap" TextAlignment="Center" Opacity="0.8" FontSize="13"
-                       Text="A cross-platform photo and video downloader and organizer for professional photographers. Transfer, rename, and organize files from card readers and cameras with smart deduplication and metadata-driven naming."/>
+                       Text="{x:Static p:Resources.ACrossPlatformPhotoAndVideo}"/>
 
             <suki:GlassCard Padding="14,12">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Current Build" FontSize="13" FontWeight="SemiBold"/>
+                    <TextBlock Text="{x:Static p:Resources.CurrentBuild}" FontSize="13" FontWeight="SemiBold"/>
                     <ItemsControl ItemsSource="{Binding ReleaseHighlights}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -56,7 +57,7 @@
             <!-- Credits Section (Collapsible) -->
             <Expander IsExpanded="{Binding IsCreditsExpanded}">
                 <Expander.Header>
-                    <TextBlock Text="Credits &amp; Open Source Packages" FontSize="13" FontWeight="SemiBold"/>
+                    <TextBlock Text="{x:Static p:Resources.CreditsOpenSourcePackages}" FontSize="13" FontWeight="SemiBold"/>
                 </Expander.Header>
                 <ItemsControl ItemsSource="{Binding Credits}" Margin="0,8,0,0">
                     <ItemsControl.ItemTemplate>
@@ -83,7 +84,7 @@
             </Expander>
 
             <!-- Close Button -->
-            <Button Content="Close" Classes="Flat" HorizontalAlignment="Center"
+            <Button Content="{x:Static p:Resources.Close}" Classes="Flat" HorizontalAlignment="Center"
                     Padding="24,8" Click="Close_Click"/>
 
         </StackPanel>

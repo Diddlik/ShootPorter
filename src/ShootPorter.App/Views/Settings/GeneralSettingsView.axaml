@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="using:ShootPorter.App.Properties"
              xmlns:vm="using:ShootPorter.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,47 +11,47 @@
 
     <StackPanel Spacing="16">
         <StackPanel>
-            <TextBlock Text="General Preferences" FontSize="20" FontWeight="SemiBold"/>
-            <TextBlock Text="Device connection and file handling rules." Opacity="0.6" FontSize="13"/>
+            <TextBlock Text="{x:Static p:Resources.GeneralPreferences}" FontSize="20" FontWeight="SemiBold"/>
+            <TextBlock Text="{x:Static p:Resources.DeviceConnectionAndFileHandlingRules}" Opacity="0.6" FontSize="13"/>
         </StackPanel>
 
         <suki:GlassCard>
             <StackPanel Spacing="12">
-                <TextBlock Text="Application" FontWeight="SemiBold" FontSize="14"/>
+                <TextBlock Text="{x:Static p:Resources.Application}" FontWeight="SemiBold" FontSize="14"/>
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <ToggleSwitch IsChecked="{Binding CheckForUpdates}" OnContent="" OffContent=""/>
-                    <TextBlock Text="Check for updates on startup" VerticalAlignment="Center"/>
+                    <TextBlock Text="{x:Static p:Resources.CheckForUpdatesOnStartup}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </suki:GlassCard>
 
         <suki:GlassCard>
             <StackPanel Spacing="12">
-                <TextBlock Text="Image Source" FontWeight="SemiBold" FontSize="14"/>
-                <RadioButton Content="Auto-detect camera or card reader" IsChecked="{Binding IsAutoDetect}" GroupName="ImageSource"/>
-                <RadioButton Content="Camera (USB connected)" IsChecked="{Binding IsCameraUsb}" GroupName="ImageSource"/>
-                <RadioButton Content="Card reader or external storage" IsChecked="{Binding IsCardReader}" GroupName="ImageSource"/>
+                <TextBlock Text="{x:Static p:Resources.ImageSource}" FontWeight="SemiBold" FontSize="14"/>
+                <RadioButton Content="{x:Static p:Resources.AutoDetectCameraOrCardReader}" IsChecked="{Binding IsAutoDetect}" GroupName="ImageSource"/>
+                <RadioButton Content="{x:Static p:Resources.CameraUSBConnected}" IsChecked="{Binding IsCameraUsb}" GroupName="ImageSource"/>
+                <RadioButton Content="{x:Static p:Resources.CardReaderOrExternalStorage}" IsChecked="{Binding IsCardReader}" GroupName="ImageSource"/>
             </StackPanel>
         </suki:GlassCard>
         
         <suki:GlassCard>
             <StackPanel Spacing="12">
-                <TextBlock Text="File Handling" FontWeight="SemiBold" FontSize="14"/>
+                <TextBlock Text="{x:Static p:Resources.FileHandling}" FontWeight="SemiBold" FontSize="14"/>
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <ToggleSwitch IsChecked="{Binding UseCaptureTime}" OnContent="" OffContent=""/>
-                    <TextBlock Text="Use capture time for file timestamp" VerticalAlignment="Center"/>
+                    <TextBlock Text="{x:Static p:Resources.UseCaptureTimeForFileTimestamp}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <ToggleSwitch IsChecked="{Binding VideoTimeIsLocal}" OnContent="" OffContent=""/>
-                    <TextBlock Text="Video time is local time (off: UTC, as phones write it)" VerticalAlignment="Center"/>
+                    <TextBlock Text="{x:Static p:Resources.VideoTimeIsLocalTimeOff}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <ToggleSwitch IsChecked="{Binding AutoRotateJpegs}" OnContent="" OffContent=""/>
-                    <TextBlock Text="Auto-rotate JPEGs (lossless)" VerticalAlignment="Center"/>
+                    <TextBlock Text="{x:Static p:Resources.AutoRotateJPEGsLossless}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <ToggleSwitch IsChecked="{Binding ConvertToLowerCase}" OnContent="" OffContent=""/>
-                    <TextBlock Text="Convert filename to lower case" VerticalAlignment="Center"/>
+                    <TextBlock Text="{x:Static p:Resources.ConvertFilenameToLowerCase}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </suki:GlassCard>

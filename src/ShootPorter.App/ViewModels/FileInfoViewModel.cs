@@ -1,3 +1,4 @@
+using ShootPorter.App.Properties;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ShootPorter.Core.Metadata;
@@ -76,7 +77,7 @@ public partial class FileInfoViewModel(bool videoTimeIsLocal) : ViewModelBase
         {
             // MetadataExtractor throws a wide range of exception types on corrupt or unusual files.
             Log.Warning(ex, "Reading metadata failed for {FilePath}", filePath);
-            ErrorMessage = $"Failed to read metadata: {ex.Message}";
+            ErrorMessage = string.Format(Resources.MetadataReadFailed, ex.Message);
         }
         finally
         {

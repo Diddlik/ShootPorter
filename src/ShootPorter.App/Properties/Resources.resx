@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ACrossPlatformPhotoAndVideo" xml:space="preserve"><value>A cross-platform photo and video downloader and organizer for professional photographers. Transfer, rename, and organize files from card readers and cameras with smart deduplication and metadata-driven naming.</value></data>
+  <data name="AboutShootPorter" xml:space="preserve"><value>About ShootPorter</value></data>
+  <data name="ActiveProfile" xml:space="preserve"><value>Active Profile</value></data>
+  <data name="AddSuffix" xml:space="preserve"><value>Add suffix</value></data>
+  <data name="AddSuffixToAll" xml:space="preserve"><value>Add suffix to all</value></data>
+  <data name="AddToMappings" xml:space="preserve"><value>Add to Mappings</value></data>
+  <data name="AfterDownload" xml:space="preserve"><value>After Download</value></data>
+  <data name="All" xml:space="preserve"><value>All</value></data>
+  <data name="Altitude" xml:space="preserve"><value>Altitude:</value></data>
+  <data name="Aperture" xml:space="preserve"><value>Aperture:</value></data>
+  <data name="Application" xml:space="preserve"><value>Application</value></data>
+  <data name="Artist" xml:space="preserve"><value>Artist:</value></data>
+  <data name="AutoDetectCameraOrCardReader" xml:space="preserve"><value>Auto-detect camera or card reader</value></data>
+  <data name="AutoRotateJPEGsLossless" xml:space="preserve"><value>Auto-rotate JPEGs (lossless)</value></data>
+  <data name="BackupDirectory1" xml:space="preserve"><value>Backup Directory 1</value></data>
+  <data name="BackupDirectory2" xml:space="preserve"><value>Backup Directory 2</value></data>
+  <data name="BaseDownloadDirectory" xml:space="preserve"><value>Base Download Directory</value></data>
+  <data name="Browse" xml:space="preserve"><value>Browse</value></data>
+  <data name="ButtonCaption" xml:space="preserve"><value>Button Caption</value></data>
+  <data name="CPhotos" xml:space="preserve"><value>C:\Photos\</value></data>
+  <data name="Camera" xml:space="preserve"><value>Camera</value></data>
+  <data name="Camera2" xml:space="preserve"><value>Camera:</value></data>
+  <data name="CameraMapping" xml:space="preserve"><value>Camera Mapping</value></data>
+  <data name="CameraMappingHint" xml:space="preserve"><value>Define {T8} and {T9} token values for each camera model.</value></data>
+  <data name="CameraMappings" xml:space="preserve"><value>Camera Mappings</value></data>
+  <data name="CameraUSBConnected" xml:space="preserve"><value>Camera (USB connected)</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="CancelDownload" xml:space="preserve"><value>Cancel download</value></data>
+  <data name="CardReaderOrExternalStorage" xml:space="preserve"><value>Card reader or external storage</value></data>
+  <data name="CheckForUpdatesOnStartup" xml:space="preserve"><value>Check for updates on startup</value></data>
+  <data name="ChooseFolder" xml:space="preserve"><value>Choose Folder</value></data>
+  <data name="ChooseSourceFolder" xml:space="preserve"><value>Choose source folder</value></data>
+  <data name="Clashes" xml:space="preserve"><value>Clashes</value></data>
+  <data name="Close" xml:space="preserve"><value>Close</value></data>
+  <data name="CommandLineScript" xml:space="preserve"><value>Command Line Script</value></data>
+  <data name="ConfigurePostDownloadScripts" xml:space="preserve"><value>Configure post-download scripts.</value></data>
+  <data name="ConfigureWhereFilesAreSavedAnd" xml:space="preserve"><value>Configure where files are saved and how they are renamed.</value></data>
+  <data name="ConvertFilenameToLowerCase" xml:space="preserve"><value>Convert filename to lower case</value></data>
+  <data name="ConvertRAWFilesToDNGAdobe" xml:space="preserve"><value>Convert RAW files to DNG (Adobe DNG Converter)</value></data>
+  <data name="Coordinates" xml:space="preserve"><value>Coordinates:</value></data>
+  <data name="Copyright" xml:space="preserve"><value>Copyright</value></data>
+  <data name="Copyright2" xml:space="preserve"><value>Copyright:</value></data>
+  <data name="CreateAndSwitchBetweenDifferentDownload" xml:space="preserve"><value>Create and switch between different download configurations.</value></data>
+  <data name="CreateSubfoldersNextToDownloadedFiles" xml:space="preserve"><value>Create subfolders next to downloaded files</value></data>
+  <data name="CreditsOpenSourcePackages" xml:space="preserve"><value>Credits &amp; Open Source Packages</value></data>
+  <data name="CurrentBuild" xml:space="preserve"><value>Current Build</value></data>
+  <data name="CustomActions" xml:space="preserve"><value>Custom Actions</value></data>
+  <data name="DESCRIPTION" xml:space="preserve"><value>DESCRIPTION</value></data>
+  <data name="DNGConverterPathEmptyDefaultInstall" xml:space="preserve"><value>DNG Converter path (empty: default install location)</value></data>
+  <data name="Date" xml:space="preserve"><value>Date</value></data>
+  <data name="DateTime" xml:space="preserve"><value>Date/Time:</value></data>
+  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="DetectedCamera" xml:space="preserve"><value>Detected Camera</value></data>
+  <data name="DetectedMediaFilesCount" xml:space="preserve"><value>Detected media files count</value></data>
+  <data name="DeviceConnectionAndFileHandlingRules" xml:space="preserve"><value>Device connection and file handling rules.</value></data>
+  <data name="Dimensions" xml:space="preserve"><value>Dimensions:</value></data>
+  <data name="DownloadNow" xml:space="preserve"><value>Download Now</value></data>
+  <data name="DownloadPath" xml:space="preserve"><value>Download Path</value></data>
+  <data name="DownloadPathAndNaming" xml:space="preserve"><value>Download Path and Naming</value></data>
+  <data name="EGVacationPhotos" xml:space="preserve"><value>e.g. Vacation Photos</value></data>
+  <data name="EXAMPLE" xml:space="preserve"><value>EXAMPLE</value></data>
+  <data name="EXAMPLEOUTPUT" xml:space="preserve"><value>EXAMPLE OUTPUT</value></data>
+  <data name="Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="EnableCustomButton" xml:space="preserve"><value>Enable custom button</value></data>
+  <data name="EnterANameForTheNew" xml:space="preserve"><value>Enter a name for the new profile</value></data>
+  <data name="Exposure" xml:space="preserve"><value>Exposure</value></data>
+  <data name="FileAlreadyExists" xml:space="preserve"><value>File already exists</value></data>
+  <data name="FileHandling" xml:space="preserve"><value>File Handling</value></data>
+  <data name="FileName" xml:space="preserve"><value>File Name</value></data>
+  <data name="FilenameTemplate" xml:space="preserve"><value>Filename Template</value></data>
+  <data name="FilterConflicts" xml:space="preserve"><value>Conflicts</value></data>
+  <data name="FilterDownloaded" xml:space="preserve"><value>Downloaded</value></data>
+  <data name="FilterErrors" xml:space="preserve"><value>Errors</value></data>
+  <data name="GPSLocation" xml:space="preserve"><value>GPS Location</value></data>
+  <data name="General" xml:space="preserve"><value>General</value></data>
+  <data name="GeneralPreferences" xml:space="preserve"><value>General Preferences</value></data>
+  <data name="ISO" xml:space="preserve"><value>ISO:</value></data>
+  <data name="IdentifyCameraUsingSerialNumber" xml:space="preserve"><value>Identify camera using serial number</value></data>
+  <data name="ImageSource" xml:space="preserve"><value>Image Source</value></data>
+  <data name="InstallOnExit" xml:space="preserve"><value>Install on Exit</value></data>
+  <data name="JobCodeLabel" xml:space="preserve"><value>Job Code {J}</value></data>
+  <data name="Keywords" xml:space="preserve"><value>Keywords:</value></data>
+  <data name="LoadingMetadata" xml:space="preserve"><value>Loading metadata...</value></data>
+  <data name="ManageProfiles" xml:space="preserve"><value>Manage Profiles</value></data>
+  <data name="MapCameraModelsToSpecificTokens" xml:space="preserve"><value>Map camera models to specific tokens.</value></data>
+  <data name="MetadataReadFailed" xml:space="preserve"><value>Failed to read metadata: {0}</value></data>
+  <data name="MyProfile" xml:space="preserve"><value>My Profile</value></data>
+  <data name="NamingTemplate" xml:space="preserve"><value>Naming Template</value></data>
+  <data name="NewProfile" xml:space="preserve"><value>New Profile</value></data>
+  <data name="None" xml:space="preserve"><value>None</value></data>
+  <data name="Optional" xml:space="preserve"><value>Optional</value></data>
+  <data name="OverallProgress" xml:space="preserve"><value>Overall Progress</value></data>
+  <data name="Overwrite" xml:space="preserve"><value>Overwrite</value></data>
+  <data name="OverwriteAll" xml:space="preserve"><value>Overwrite all</value></data>
+  <data name="PROFILE" xml:space="preserve"><value>PROFILE</value></data>
+  <data name="PluginsFailed" xml:space="preserve"><value>Failed: {0}</value></data>
+  <data name="Preferences" xml:space="preserve"><value>Preferences</value></data>
+  <data name="ProfileActive" xml:space="preserve"><value>ACTIVE</value></data>
+  <data name="ProfileArchive" xml:space="preserve"><value>Long-term Archive</value></data>
+  <data name="ProfileName" xml:space="preserve"><value>Profile Name</value></data>
+  <data name="ProfileSelect" xml:space="preserve"><value>SELECT</value></data>
+  <data name="ProfileStandardPhotos" xml:space="preserve"><value>Standard Photos</value></data>
+  <data name="ProfileWorkClients" xml:space="preserve"><value>Work / Clients</value></data>
+  <data name="PromptForJobCodeOnRun" xml:space="preserve"><value>Prompt for Job code on run</value></data>
+  <data name="RNewFotos" xml:space="preserve"><value>R:\New Fotos\</value></data>
+  <data name="Ready" xml:space="preserve"><value>Ready</value></data>
+  <data name="Recent" xml:space="preserve"><value>Recent</value></data>
+  <data name="RecentFolders" xml:space="preserve"><value>Recent folders</value></data>
+  <data name="RecentSourceFolders" xml:space="preserve"><value>Recent source folders</value></data>
+  <data name="RemoveMapping" xml:space="preserve"><value>Remove mapping</value></data>
+  <data name="RescanSourceFolder" xml:space="preserve"><value>Rescan source folder</value></data>
+  <data name="Reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="RestartNow" xml:space="preserve"><value>Restart Now</value></data>
+  <data name="SampleData" xml:space="preserve"><value>(sample data)</value></data>
+  <data name="Save" xml:space="preserve"><value>Save</value></data>
+  <data name="SaveAsNewProfile" xml:space="preserve"><value>Save as New Profile</value></data>
+  <data name="ScriptReceivesFFilePathAnd" xml:space="preserve"><value>Script receives %f (file path) and %d (directory) as arguments.</value></data>
+  <data name="SearchFiles" xml:space="preserve"><value>Search files...</value></data>
+  <data name="Select" xml:space="preserve"><value>Select</value></data>
+  <data name="SelectByDate" xml:space="preserve"><value>Select by Date</value></data>
+  <data name="SequenceStartValue" xml:space="preserve"><value>Sequence Start Value</value></data>
+  <data name="Serial" xml:space="preserve"><value>Serial:</value></data>
+  <data name="ShootPorter" xml:space="preserve"><value>ShootPorter</value></data>
+  <data name="ShowTokens" xml:space="preserve"><value>Show Tokens</value></data>
+  <data name="Shutter" xml:space="preserve"><value>Shutter:</value></data>
+  <data name="Size" xml:space="preserve"><value>Size</value></data>
+  <data name="Skip" xml:space="preserve"><value>Skip</value></data>
+  <data name="Source" xml:space="preserve"><value>Source</value></data>
+  <data name="SourceFilesDetected" xml:space="preserve"><value>{0} files detected</value></data>
+  <data name="SourceFolderNotFound" xml:space="preserve"><value>Folder not found</value></data>
+  <data name="SourceNoFiles" xml:space="preserve"><value>No media files detected</value></data>
+  <data name="SourceNoFolderSelected" xml:space="preserve"><value>No folder selected</value></data>
+  <data name="SourceOneFile" xml:space="preserve"><value>1 file detected</value></data>
+  <data name="SourcePath" xml:space="preserve"><value>Source Path</value></data>
+  <data name="SourceRemovableDisk" xml:space="preserve"><value>Removable Disk</value></data>
+  <data name="SourceScanning" xml:space="preserve"><value>Scanning folder...</value></data>
+  <data name="SourceSelectFolderHint" xml:space="preserve"><value>Select a folder to detect media files</value></data>
+  <data name="StartDownload" xml:space="preserve"><value>Start Download</value></data>
+  <data name="Status" xml:space="preserve"><value>Status</value></data>
+  <data name="StatusAlreadyDownloaded" xml:space="preserve"><value>Already downloaded</value></data>
+  <data name="StatusCompleted" xml:space="preserve"><value>Completed</value></data>
+  <data name="StatusDeleteFailed" xml:space="preserve"><value>Delete failed</value></data>
+  <data name="StatusDeleted" xml:space="preserve"><value>Deleted</value></data>
+  <data name="StatusDownloading" xml:space="preserve"><value>Downloading</value></data>
+  <data name="StatusError" xml:space="preserve"><value>Error</value></data>
+  <data name="StatusNameClash" xml:space="preserve"><value>Name clash</value></data>
+  <data name="StatusPending" xml:space="preserve"><value>Pending</value></data>
+  <data name="StatusRetained" xml:space="preserve"><value>Retained</value></data>
+  <data name="SubfolderNamesCommaSeparated" xml:space="preserve"><value>Subfolder names (comma separated)</value></data>
+  <data name="TOKEN" xml:space="preserve"><value>TOKEN</value></data>
+  <data name="ThisFileIsAlreadyInThe" xml:space="preserve"><value>This file is already in the destination:</value></data>
+  <data name="TimeRemaining" xml:space="preserve"><value>{0} remaining</value></data>
+  <data name="ToggleTheme" xml:space="preserve"><value>Toggle theme</value></data>
+  <data name="TokenCategory_CameraShootingData" xml:space="preserve"><value>Camera / Shooting Data</value></data>
+  <data name="TokenCategory_CurrentTimeNow" xml:space="preserve"><value>Current Time ('Now')</value></data>
+  <data name="TokenCategory_DateAndTime" xml:space="preserve"><value>Date and Time</value></data>
+  <data name="TokenCategory_FileSystem" xml:space="preserve"><value>File System</value></data>
+  <data name="TokenCategory_JobCodeAndNumbering" xml:space="preserve"><value>Job Code and Numbering</value></data>
+  <data name="TokenCategory_StringFunctions" xml:space="preserve"><value>String Functions</value></data>
+  <data name="TokenReference" xml:space="preserve"><value>Token Reference</value></data>
+  <data name="TokenTip" xml:space="preserve"><value>Tip: Tokens can be combined, e.g. {Y}{m}{D}_{H}{M}{S}_{T8}</value></data>
+  <data name="Token_1" xml:space="preserve"><value>Year 'now' with century</value></data>
+  <data name="Token_2" xml:space="preserve"><value>Month 'now' (01-12)</value></data>
+  <data name="Token_3" xml:space="preserve"><value>Day 'now' (01-31)</value></data>
+  <data name="Token_4" xml:space="preserve"><value>Year 'now' without century</value></data>
+  <data name="Token_5" xml:space="preserve"><value>Year less 3 hours</value></data>
+  <data name="Token_6" xml:space="preserve"><value>Month less 3 hours</value></data>
+  <data name="Token_7" xml:space="preserve"><value>Day less 3 hours</value></data>
+  <data name="Token_AU" xml:space="preserve"><value>Full weekday name</value></data>
+  <data name="Token_BU" xml:space="preserve"><value>Full month name</value></data>
+  <data name="Token_CU" xml:space="preserve"><value>Canon EOS-1D serial</value></data>
+  <data name="Token_DU" xml:space="preserve"><value>Day of month (01-31)</value></data>
+  <data name="Token_EU" xml:space="preserve"><value>File type (JPG/RAW)</value></data>
+  <data name="Token_EU1" xml:space="preserve"><value>Type (empty for JPG)</value></data>
+  <data name="Token_EU2" xml:space="preserve"><value>Type (JPG or empty)</value></data>
+  <data name="Token_FU" xml:space="preserve"><value>Filename without ext</value></data>
+  <data name="Token_HU" xml:space="preserve"><value>Hour 24h (00-23)</value></data>
+  <data name="Token_HUashc" xml:space="preserve"><value>Long date/time locale</value></data>
+  <data name="Token_HUashx" xml:space="preserve"><value>Long date locale</value></data>
+  <data name="Token_IU" xml:space="preserve"><value>Hour 12h (01-12)</value></data>
+  <data name="Token_IUWUDU" xml:space="preserve"><value>Full ISO week date</value></data>
+  <data name="Token_JU" xml:space="preserve"><value>Job code</value></data>
+  <data name="Token_JUc_fw" xml:space="preserve"><value>First word of job code</value></data>
+  <data name="Token_KU1" xml:space="preserve"><value>Focal length mm</value></data>
+  <data name="Token_KU2" xml:space="preserve"><value>Aperture</value></data>
+  <data name="Token_KU3" xml:space="preserve"><value>Shutter speed denom.</value></data>
+  <data name="Token_LU" xml:space="preserve"><value>Uniqueness (always)</value></data>
+  <data name="Token_MU" xml:space="preserve"><value>Minutes (00-59)</value></data>
+  <data name="Token_OU" xml:space="preserve"><value>Owner string</value></data>
+  <data name="Token_PU" xml:space="preserve"><value>Quarter (1-4)</value></data>
+  <data name="Token_RU" xml:space="preserve"><value>Downloads today</value></data>
+  <data name="Token_SU" xml:space="preserve"><value>Seconds (00-59)</value></data>
+  <data name="Token_TU" xml:space="preserve"><value>Camera model (digits)</value></data>
+  <data name="Token_TU1" xml:space="preserve"><value>Model (hyphen=space)</value></data>
+  <data name="Token_TU2" xml:space="preserve"><value>Full camera name</value></data>
+  <data name="Token_TU3" xml:space="preserve"><value>First word with digits</value></data>
+  <data name="Token_TU4" xml:space="preserve"><value>T3 (hyphen=space)</value></data>
+  <data name="Token_TU5" xml:space="preserve"><value>Last word with digits</value></data>
+  <data name="Token_TU6" xml:space="preserve"><value>T5 (hyphen=space)</value></data>
+  <data name="Token_TU8" xml:space="preserve"><value>Camera mapping value</value></data>
+  <data name="Token_TU9" xml:space="preserve"><value>Camera mapping value</value></data>
+  <data name="Token_WU" xml:space="preserve"><value>Week number (00-53)</value></data>
+  <data name="Token_WUIU" xml:space="preserve"><value>ISO week number</value></data>
+  <data name="Token_XU" xml:space="preserve"><value>Time for locale (underscores)</value></data>
+  <data name="Token_YU" xml:space="preserve"><value>Year with century</value></data>
+  <data name="Token_ZU" xml:space="preserve"><value>Time zone offset</value></data>
+  <data name="Token_a" xml:space="preserve"><value>Abbreviated weekday</value></data>
+  <data name="Token_b" xml:space="preserve"><value>Abbreviated month name</value></data>
+  <data name="Token_c" xml:space="preserve"><value>Camera serial number</value></data>
+  <data name="Token_capitalize_str" xml:space="preserve"><value>Capitalize first</value></data>
+  <data name="Token_cc1_code" xml:space="preserve"><value>Country name</value></data>
+  <data name="Token_cc2_code" xml:space="preserve"><value>3-char to 2-char</value></data>
+  <data name="Token_copyright" xml:space="preserve"><value>Copyright</value></data>
+  <data name="Token_d" xml:space="preserve"><value>Date YYMMDD</value></data>
+  <data name="Token_default_s1_s2" xml:space="preserve"><value>s1 or s2 if s1 empty</value></data>
+  <data name="Token_e" xml:space="preserve"><value>Extension without '.'</value></data>
+  <data name="Token_f" xml:space="preserve"><value>First 3 chars of name</value></data>
+  <data name="Token_file_2" xml:space="preserve"><value>Char 2 of filename</value></data>
+  <data name="Token_file_2_5" xml:space="preserve"><value>Chars 2-5 of filename</value></data>
+  <data name="Token_file_4" xml:space="preserve"><value>From char 4 to end</value></data>
+  <data name="Token_first_str" xml:space="preserve"><value>First word in str</value></data>
+  <data name="Token_i" xml:space="preserve"><value>ISO</value></data>
+  <data name="Token_if_test_s1_s2" xml:space="preserve"><value>s1 if test empty</value></data>
+  <data name="Token_j" xml:space="preserve"><value>Day of year (001-366)</value></data>
+  <data name="Token_k" xml:space="preserve"><value>ISO (0=Auto)</value></data>
+  <data name="Token_l" xml:space="preserve"><value>Uniqueness (empty if unique)</value></data>
+  <data name="Token_l2" xml:space="preserve"><value>Uniqueness (2 digits)</value></data>
+  <data name="Token_l3" xml:space="preserve"><value>Uniqueness (3 digits)</value></data>
+  <data name="Token_l4" xml:space="preserve"><value>Uniqueness (4 digits)</value></data>
+  <data name="Token_last_str" xml:space="preserve"><value>Last word in str</value></data>
+  <data name="Token_left_n_str" xml:space="preserve"><value>Left n chars of str</value></data>
+  <data name="Token_lower_str" xml:space="preserve"><value>Convert to lower</value></data>
+  <data name="Token_m" xml:space="preserve"><value>Month (01-12)</value></data>
+  <data name="Token_mid_n_m_str" xml:space="preserve"><value>Middle m chars from n</value></data>
+  <data name="Token_n1" xml:space="preserve"><value>Session seq (1 digit)</value></data>
+  <data name="Token_n2" xml:space="preserve"><value>Session seq (2 digits)</value></data>
+  <data name="Token_n3" xml:space="preserve"><value>Session seq (3 digits)</value></data>
+  <data name="Token_n4" xml:space="preserve"><value>Session seq (4 digits)</value></data>
+  <data name="Token_o" xml:space="preserve"><value>Image folder name</value></data>
+  <data name="Token_p" xml:space="preserve"><value>AM/PM (upper)</value></data>
+  <data name="Token_plc" xml:space="preserve"><value>am/pm (lower)</value></data>
+  <data name="Token_q" xml:space="preserve"><value>Image folder number</value></data>
+  <data name="Token_r" xml:space="preserve"><value>Image number</value></data>
+  <data name="Token_r1" xml:space="preserve"><value>Last 1 digit</value></data>
+  <data name="Token_r2" xml:space="preserve"><value>Last 2 digits</value></data>
+  <data name="Token_r3" xml:space="preserve"><value>Last 3 digits</value></data>
+  <data name="Token_r4" xml:space="preserve"><value>Last 4 digits</value></data>
+  <data name="Token_r8" xml:space="preserve"><value>Image counter</value></data>
+  <data name="Token_r85" xml:space="preserve"><value>Image counter (5 dig)</value></data>
+  <data name="Token_r86" xml:space="preserve"><value>Image counter (6 dig)</value></data>
+  <data name="Token_right_n_str" xml:space="preserve"><value>Right n chars of str</value></data>
+  <data name="Token_s" xml:space="preserve"><value>Subseconds</value></data>
+  <data name="Token_seqHUash" xml:space="preserve"><value>Download sequence</value></data>
+  <data name="Token_seqHUash2" xml:space="preserve"><value>Sequence (2 digits)</value></data>
+  <data name="Token_seqHUash3" xml:space="preserve"><value>Sequence (3 digits)</value></data>
+  <data name="Token_seqHUash4" xml:space="preserve"><value>Sequence (4 digits)</value></data>
+  <data name="Token_seqHUash5" xml:space="preserve"><value>Sequence (5 digits)</value></data>
+  <data name="Token_seqHUash6" xml:space="preserve"><value>Sequence (6 digits)</value></data>
+  <data name="Token_t" xml:space="preserve"><value>Time HHMMSS</value></data>
+  <data name="Token_u" xml:space="preserve"><value>My Pictures folder</value></data>
+  <data name="Token_upper_str" xml:space="preserve"><value>Convert to UPPER</value></data>
+  <data name="Token_x" xml:space="preserve"><value>Date for locale</value></data>
+  <data name="Token_y" xml:space="preserve"><value>Year without century</value></data>
+  <data name="Token_z" xml:space="preserve"><value>Time zone name</value></data>
+  <data name="Total" xml:space="preserve"><value>Total</value></data>
+  <data name="TransferQueue" xml:space="preserve"><value>Transfer Queue</value></data>
+  <data name="UpdateAvailable" xml:space="preserve"><value>Update Available</value></data>
+  <data name="UpdateAvailableText" xml:space="preserve"><value>Version {0} is available. You are running {1}.</value></data>
+  <data name="UpdateDownloadCancelled" xml:space="preserve"><value>Download cancelled.</value></data>
+  <data name="UpdateDownloadComplete" xml:space="preserve"><value>Download complete. Ready to install.</value></data>
+  <data name="UpdateDownloadFailed" xml:space="preserve"><value>Download failed.</value></data>
+  <data name="UpdateDownloadProgress" xml:space="preserve"><value>Downloading... {0}%</value></data>
+  <data name="UpdateDownloading" xml:space="preserve"><value>Downloading update...</value></data>
+  <data name="UseCaptureTimeForFileTimestamp" xml:space="preserve"><value>Use capture time for file timestamp</value></data>
+  <data name="UseTheseTokensInYourFilename" xml:space="preserve"><value>Use these tokens in your filename template to generate dynamic filenames</value></data>
+  <data name="VideoTimeIsLocalTimeOff" xml:space="preserve"><value>Video time is local time (off: UTC, as phones write it)</value></data>
+</root>

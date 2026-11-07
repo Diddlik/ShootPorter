@@ -1,3 +1,4 @@
+using ShootPorter.App.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -139,8 +140,8 @@ internal sealed class DownloadSession
     };
 
     private static string FormatTimeRemaining(TimeSpan time) => time.TotalHours >= 1
-        ? $"{(int)time.TotalHours}:{time.Minutes:D2}:{time.Seconds:D2} remaining"
-        : $"{time.Minutes}:{time.Seconds:D2} remaining";
+        ? string.Format(Resources.TimeRemaining, $"{(int)time.TotalHours}:{time.Minutes:D2}:{time.Seconds:D2}")
+        : string.Format(Resources.TimeRemaining, $"{time.Minutes}:{time.Seconds:D2}");
 
     private sealed class CallbackProgress<T>(Action<T> callback) : IProgress<T>
     {

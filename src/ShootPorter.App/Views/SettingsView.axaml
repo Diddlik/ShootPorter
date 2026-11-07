@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="using:ShootPorter.App.Properties"
              xmlns:vm="using:ShootPorter.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -16,22 +17,22 @@
                 <Button Command="{Binding NavigateTabCommand}" CommandParameter="DownloadPath"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                         Classes="Flat" Padding="16,12">
-                    <TextBlock Text="Download Path"/>
+                    <TextBlock Text="{x:Static p:Resources.DownloadPath}"/>
                 </Button>
                 <Button Command="{Binding NavigateTabCommand}" CommandParameter="General"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                         Classes="Flat" Padding="16,12">
-                    <TextBlock Text="General"/>
+                    <TextBlock Text="{x:Static p:Resources.General}"/>
                 </Button>
                 <Button Command="{Binding NavigateTabCommand}" CommandParameter="CameraMapping"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                         Classes="Flat" Padding="16,12">
-                    <TextBlock Text="Camera Mapping"/>
+                    <TextBlock Text="{x:Static p:Resources.CameraMapping}"/>
                 </Button>
                 <Button Command="{Binding NavigateTabCommand}" CommandParameter="CustomActions"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                         Classes="Flat" Padding="16,12">
-                    <TextBlock Text="Custom Actions"/>
+                    <TextBlock Text="{x:Static p:Resources.CustomActions}"/>
                 </Button>
             </StackPanel>
         </suki:GlassCard>

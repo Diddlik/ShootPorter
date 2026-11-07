@@ -1,3 +1,4 @@
+using ShootPorter.App.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -433,7 +434,7 @@ public partial class SettingsViewModel : ViewModelBase
     {
         var newProfile = new ProfileItem(SelectProfile, DeleteProfile, OnProfileSaved)
         {
-            Name = "New Profile",
+            Name = Resources.NewProfile,
             Path = @"C:\Photos\",
             NamingTemplate = "{Y}{m}{D}_{o}",
             IsActive = false,
@@ -481,7 +482,7 @@ public partial class SettingsViewModel : ViewModelBase
     {
         Profiles.Add(new ProfileItem(SelectProfile, DeleteProfile, OnProfileSaved)
         {
-            Name = "Standard Photos",
+            Name = Resources.ProfileStandardPhotos,
             Path = @"R:\New Fotos\",
             NamingTemplate = "{Y}{m}{D}_{H}{M}{S}_{T8}_{r}",
             IsActive = true,
@@ -489,7 +490,7 @@ public partial class SettingsViewModel : ViewModelBase
         });
         Profiles.Add(new ProfileItem(SelectProfile, DeleteProfile, OnProfileSaved)
         {
-            Name = "Work / Clients",
+            Name = Resources.ProfileWorkClients,
             Path = @"N:\Work\Projects\",
             NamingTemplate = "{J}_{Y}{m}{D}_{seq#}",
             IsActive = false,
@@ -497,7 +498,7 @@ public partial class SettingsViewModel : ViewModelBase
         });
         Profiles.Add(new ProfileItem(SelectProfile, DeleteProfile, OnProfileSaved)
         {
-            Name = "Long-term Archive",
+            Name = Resources.ProfileArchive,
             Path = @"S:\Archive\Raw\",
             NamingTemplate = @"{Y}\{m}\{Y}{m}{D}_{o}",
             IsActive = false,

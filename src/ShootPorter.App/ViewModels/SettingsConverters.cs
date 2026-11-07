@@ -1,3 +1,4 @@
+using ShootPorter.App.Properties;
 using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
@@ -92,7 +93,7 @@ public class ProfileButtonTextConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is bool isActive && isActive ? "ACTIVE" : "SELECT";
+        return value is bool isActive && isActive ? Resources.ProfileActive : Resources.ProfileSelect;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

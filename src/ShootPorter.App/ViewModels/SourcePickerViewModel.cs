@@ -1,3 +1,4 @@
+using ShootPorter.App.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -81,26 +82,26 @@ public partial class SourcePickerViewModel : ViewModelBase, IDisposable
         get
         {
             if (string.IsNullOrWhiteSpace(SelectedSourcePath))
-                return "Select a folder to detect media files";
+                return Resources.SourceSelectFolderHint;
 
             if (!SourceFolderExists)
-                return "Folder not found";
+                return Resources.SourceFolderNotFound;
 
             if (IsSourceScanning)
-                return "Scanning folder...";
+                return Resources.SourceScanning;
 
             return DetectedFileCount switch
             {
-                0 => "No media files detected",
-                1 => "1 file detected",
-                _ => $"{DetectedFileCount} files detected"
+                0 => Resources.SourceNoFiles,
+                1 => Resources.SourceOneFile,
+                _ => string.Format(Resources.SourceFilesDetected, DetectedFileCount)
             };
         }
     }
 
     public string DisplaySourcePath =>
         string.IsNullOrWhiteSpace(SelectedSourcePath)
-            ? "No folder selected"
+            ? Resources.SourceNoFolderSelected
             : ShortenPath(SelectedSourcePath);
 
     partial void OnSelectedInputSourceChanged(InputSourceItem? value)
@@ -149,7 +150,7 @@ public partial class SourcePickerViewModel : ViewModelBase, IDisposable
                 if (!SourceDriveFilter.IsSource(drive.DriveType, hasDcim, mode))
                     continue;
 
-                var label = string.IsNullOrWhiteSpace(drive.VolumeLabel) ? "Removable Disk" : drive.VolumeLabel;
+                var label = string.IsNullOrWhiteSpace(drive.VolumeLabel) ? Resources.SourceRemovableDisk : drive.VolumeLabel;
                 InputSources.Add(new InputSourceItem
                 {
                     Path = drive.Name,

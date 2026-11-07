@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="using:ShootPorter.App.Properties"
              xmlns:vm="using:ShootPorter.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -14,7 +15,7 @@
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Orientation="Horizontal" Spacing="24">
                     <StackPanel>
-                        <TextBlock Text="Overall Progress" FontSize="13" FontWeight="SemiBold"/>
+                        <TextBlock Text="{x:Static p:Resources.OverallProgress}" FontSize="13" FontWeight="SemiBold"/>
                         <TextBlock FontSize="11" Opacity="0.6" FontFamily="Consolas,Courier New,monospace"
                                    Text="{Binding DestinationPath, StringFormat='→ {0}'}"/>
                     </StackPanel>
@@ -51,10 +52,10 @@
                 <Grid RowDefinitions="Auto,Auto">
                     <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,8">
                         <PathIcon Data="{StaticResource IconCalendar}" Width="14" Height="14"/>
-                        <TextBlock Text="Select by Date" FontWeight="SemiBold" FontSize="12"/>
-                        <Button Content="All" Command="{Binding SelectAllDatesCommand}"
+                        <TextBlock Text="{x:Static p:Resources.SelectByDate}" FontWeight="SemiBold" FontSize="12"/>
+                        <Button Content="{x:Static p:Resources.All}" Command="{Binding SelectAllDatesCommand}"
                                 Classes="Flat" FontSize="10" Padding="8,4"/>
-                        <Button Content="None" Command="{Binding DeselectAllDatesCommand}"
+                        <Button Content="{x:Static p:Resources.None}" Command="{Binding DeselectAllDatesCommand}"
                                 Classes="Flat" FontSize="10" Padding="8,4"/>
                     </StackPanel>
                     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
@@ -88,21 +89,21 @@
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="12,0,0,0">
                 <suki:GlassCard Padding="12,8" MinWidth="80">
                     <StackPanel HorizontalAlignment="Center">
-                        <TextBlock Text="Total" FontSize="10" Opacity="0.6" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{x:Static p:Resources.Total}" FontSize="10" Opacity="0.6" HorizontalAlignment="Center"/>
                         <TextBlock Text="{Binding TotalFiles}" FontSize="20" FontWeight="Bold" 
                                    HorizontalAlignment="Center"/>
                     </StackPanel>
                 </suki:GlassCard>
                 <suki:GlassCard Padding="12,8" MinWidth="80">
                     <StackPanel HorizontalAlignment="Center">
-                        <TextBlock Text="Ready" FontSize="10" Opacity="0.6" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{x:Static p:Resources.Ready}" FontSize="10" Opacity="0.6" HorizontalAlignment="Center"/>
                         <TextBlock Text="{Binding ReadyToTransfer}" FontSize="20" FontWeight="Bold" 
                                    Foreground="#10b981" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </suki:GlassCard>
                 <suki:GlassCard Padding="12,8" MinWidth="80">
                     <StackPanel HorizontalAlignment="Center">
-                        <TextBlock Text="Clashes" FontSize="10" Foreground="#f59e0b" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{x:Static p:Resources.Clashes}" FontSize="10" Foreground="#f59e0b" HorizontalAlignment="Center"/>
                         <TextBlock Text="{Binding NameClashes}" FontSize="20" FontWeight="Bold" 
                                    Foreground="#f59e0b" HorizontalAlignment="Center"/>
                     </StackPanel>
@@ -115,7 +116,7 @@
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <PathIcon Data="{StaticResource IconSearch}" Width="12" Height="12" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding SearchText}" Watermark="Search files..." 
+                    <TextBox Text="{Binding SearchText}" Watermark="{x:Static p:Resources.SearchFiles}" 
                              Width="200" FontSize="12"/>
                 </StackPanel>
                 
@@ -184,7 +185,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="File Name" Width="1.1*" MinWidth="140" MaxWidth="230">
+                    <DataGridTemplateColumn Header="{x:Static p:Resources.FileName}" Width="1.1*" MinWidth="140" MaxWidth="230">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="6" Margin="6,0">
@@ -195,7 +196,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="Status" Width="100">
+                    <DataGridTemplateColumn Header="{x:Static p:Resources.Status}" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Border CornerRadius="10" Padding="6,3" 
@@ -211,7 +212,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="Size" Width="80">
+                    <DataGridTemplateColumn Header="{x:Static p:Resources.Size}" Width="80">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding SizeDisplay}" FontSize="12" 
@@ -220,7 +221,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="Date" Width="90">
+                    <DataGridTemplateColumn Header="{x:Static p:Resources.Date}" Width="90">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="6,0">
@@ -231,7 +232,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="Download Path" Width="2.2*" MinWidth="240">
+                    <DataGridTemplateColumn Header="{x:Static p:Resources.DownloadPath}" Width="2.2*" MinWidth="240">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding DestinationPreview}" 
@@ -243,7 +244,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="Source Path" Width="1.7*" MinWidth="220">
+                    <DataGridTemplateColumn Header="{x:Static p:Resources.SourcePath}" Width="1.7*" MinWidth="220">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding SourcePath}" 

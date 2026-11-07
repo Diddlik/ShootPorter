@@ -1,3 +1,4 @@
+using ShootPorter.App.Properties;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -63,12 +64,12 @@ public partial class TransferQueueViewModel : ViewModelBase
 
     public TransferQueueViewModel()
     {
-        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.All, "All", SelectFilter));
-        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Ready, "Ready", SelectFilter));
-        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Conflicts, "Conflicts", SelectFilter));
-        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Downloaded, "Downloaded", SelectFilter));
-        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Downloading, "Downloading", SelectFilter));
-        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Errors, "Errors", SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.All, Resources.All, SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Ready, Resources.Ready, SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Conflicts, Resources.FilterConflicts, SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Downloaded, Resources.FilterDownloaded, SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Downloading, Resources.StatusDownloading, SelectFilter));
+        FilterChips.Add(new TransferFilterChip(TransferFilterKeys.Errors, Resources.FilterErrors, SelectFilter));
         UpdateFilterChips();
     }
 

@@ -1,3 +1,4 @@
+using ShootPorter.App.Properties;
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -74,15 +75,15 @@ public partial class TransferFileItem : ObservableObject
 
     public string StatusText => Status switch
     {
-        FileTransferStatus.Error when SourceDisposition == SourceFileDisposition.DeleteFailed => "Delete failed",
-        FileTransferStatus.Completed when SourceDisposition == SourceFileDisposition.Deleted => "Deleted",
-        FileTransferStatus.Completed when SourceDisposition == SourceFileDisposition.Retained => "Retained",
-        FileTransferStatus.Completed => "Completed",
-        FileTransferStatus.AlreadyDownloaded => "Already downloaded",
-        FileTransferStatus.Downloading => "Downloading",
-        FileTransferStatus.NameClash => "Name clash",
-        FileTransferStatus.Error => "Error",
-        _ => "Pending"
+        FileTransferStatus.Error when SourceDisposition == SourceFileDisposition.DeleteFailed => Resources.StatusDeleteFailed,
+        FileTransferStatus.Completed when SourceDisposition == SourceFileDisposition.Deleted => Resources.StatusDeleted,
+        FileTransferStatus.Completed when SourceDisposition == SourceFileDisposition.Retained => Resources.StatusRetained,
+        FileTransferStatus.Completed => Resources.StatusCompleted,
+        FileTransferStatus.AlreadyDownloaded => Resources.StatusAlreadyDownloaded,
+        FileTransferStatus.Downloading => Resources.StatusDownloading,
+        FileTransferStatus.NameClash => Resources.StatusNameClash,
+        FileTransferStatus.Error => Resources.StatusError,
+        _ => Resources.StatusPending
     };
 
     public string StatusIcon => Status switch

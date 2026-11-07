@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="using:ShootPorter.App.Properties"
              xmlns:vm="using:ShootPorter.App.ViewModels"
              xmlns:suki="using:SukiUI.Controls"
              x:Class="ShootPorter.App.Views.SourcePickerCard"
@@ -10,13 +11,13 @@
             <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
                 <PathIcon Data="{StaticResource IconFolder}" Width="14" Height="14"
                           Opacity="0.72" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Text="Source" Margin="7,0,0,0"
+                <TextBlock Grid.Column="1" Text="{x:Static p:Resources.Source}" Margin="7,0,0,0"
                            FontSize="13" FontWeight="SemiBold"
                            VerticalAlignment="Center"/>
                 <Button Grid.Column="2" Classes="Basic" Padding="5"
                         Command="{Binding RescanSourceCommand}"
                         IsEnabled="{Binding HasSelectedSourcePath}"
-                        ToolTip.Tip="Rescan source folder">
+                        ToolTip.Tip="{x:Static p:Resources.RescanSourceFolder}">
                     <PathIcon Data="{StaticResource IconRefresh}" Width="13" Height="13"
                               Opacity="0.62"/>
                 </Button>
@@ -32,17 +33,17 @@
             <Button Classes="Flat Accent" Padding="10,8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                     Click="ChooseFolder_Click"
-                    ToolTip.Tip="Choose source folder">
+                    ToolTip.Tip="{x:Static p:Resources.ChooseSourceFolder}">
                 <StackPanel Orientation="Horizontal" Spacing="7">
                     <PathIcon Data="{StaticResource IconFolder}" Width="13" Height="13"/>
-                    <TextBlock Text="Choose Folder" FontSize="12" FontWeight="SemiBold"/>
+                    <TextBlock Text="{x:Static p:Resources.ChooseFolder}" FontSize="12" FontWeight="SemiBold"/>
                 </StackPanel>
             </Button>
 
             <Button Classes="Basic" Padding="8,6"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                     IsVisible="{Binding HasRecentSourcePaths}"
-                    ToolTip.Tip="Recent source folders">
+                    ToolTip.Tip="{x:Static p:Resources.RecentSourceFolders}">
                 <Button.Flyout>
                     <Flyout Placement="Top">
                         <Border Padding="12" MinWidth="220"
@@ -51,7 +52,7 @@
                                 BorderBrush="#314052"
                                 BorderThickness="1">
                             <StackPanel Spacing="8">
-                                <TextBlock Text="Recent folders" FontSize="12"
+                                <TextBlock Text="{x:Static p:Resources.RecentFolders}" FontSize="12"
                                            FontWeight="SemiBold" Opacity="0.72"/>
                                 <ItemsControl ItemsSource="{Binding RecentSourcePaths}">
                                     <ItemsControl.ItemTemplate>
@@ -73,7 +74,7 @@
                     </Flyout>
                 </Button.Flyout>
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Text="Recent" FontSize="12" Opacity="0.72"
+                    <TextBlock Text="{x:Static p:Resources.Recent}" FontSize="12" Opacity="0.72"
                                VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" Text=">" FontSize="14" Opacity="0.54"
                                VerticalAlignment="Center"/>
@@ -82,7 +83,7 @@
 
             <TextBlock Text="{Binding SourceStatusText}" FontSize="11" Opacity="0.62"
                        TextTrimming="CharacterEllipsis"
-                       ToolTip.Tip="Detected media files count"/>
+                       ToolTip.Tip="{x:Static p:Resources.DetectedMediaFilesCount}"/>
         </StackPanel>
     </suki:GlassCard>
 </UserControl>

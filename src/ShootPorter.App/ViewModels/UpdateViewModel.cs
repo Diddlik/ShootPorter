@@ -1,3 +1,4 @@
+using ShootPorter.App.Properties;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,7 +53,7 @@ public partial class UpdateViewModel : ViewModelBase
         _updateService = updateService;
         CurrentVersion = currentVersion;
         AvailableVersion = availableVersion;
-        StatusText = $"Version {availableVersion} is available. You are running {currentVersion}.";
+        StatusText = string.Format(Resources.UpdateAvailableText, availableVersion, currentVersion);
     }
 
     /// <summary>
@@ -68,7 +69,7 @@ public partial class UpdateViewModel : ViewModelBase
     {
         IsDownloading = true;
         HasError = false;
-        StatusText = "Downloading update...";
+        StatusText = Resources.UpdateDownloading;
         using var downloadCts = new CancellationTokenSource();
         _downloadCts = downloadCts;
 
@@ -80,19 +81,19 @@ public partial class UpdateViewModel : ViewModelBase
                     Dispatcher.UIThread.Post(() =>
                     {
                         DownloadProgress = progress;
-                        StatusText = $"Downloading... {progress}%";
+                        StatusText = string.Format(Resources.UpdateDownloadProgress, progress);
                     });
                 },
                 _downloadCts.Token);
 
             IsDownloading = false;
             IsReadyToInstall = true;
-            StatusText = "Download complete. Ready to install.";
+            StatusText = Resources.UpdateDownloadComplete;
         }
         catch (OperationCanceledException)
         {
             IsDownloading = false;
-            StatusText = "Download cancelled.";
+            StatusText = Resources.UpdateDownloadCancelled;
         }
         catch (Exception ex)
         {
@@ -101,7 +102,7 @@ public partial class UpdateViewModel : ViewModelBase
             IsDownloading = false;
             HasError = true;
             ErrorMessage = ex.Message;
-            StatusText = "Download failed.";
+            StatusText = Resources.UpdateDownloadFailed;
         }
         finally
         {

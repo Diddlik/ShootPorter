@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="using:ShootPorter.App.Properties"
              xmlns:vm="using:ShootPorter.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,13 +12,13 @@
     <StackPanel Spacing="16">
         <Grid ColumnDefinitions="*,Auto">
             <StackPanel>
-                <TextBlock Text="Manage Profiles" FontSize="20" FontWeight="SemiBold"/>
-                <TextBlock Text="Create and switch between different download configurations." Opacity="0.6" FontSize="13"/>
+                <TextBlock Text="{x:Static p:Resources.ManageProfiles}" FontSize="20" FontWeight="SemiBold"/>
+                <TextBlock Text="{x:Static p:Resources.CreateAndSwitchBetweenDifferentDownload}" Opacity="0.6" FontSize="13"/>
             </StackPanel>
             <Button Grid.Column="1" Classes="Flat Accent" Command="{Binding NewProfileCommand}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="+" FontSize="14"/>
-                    <TextBlock Text="New Profile" FontWeight="SemiBold"/>
+                    <TextBlock Text="{x:Static p:Resources.NewProfile}" FontWeight="SemiBold"/>
                 </StackPanel>
             </Button>
         </Grid>
@@ -38,9 +39,9 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
                                             VerticalAlignment="Center">
-                                    <Button Content="Select" Classes="Flat" Command="{Binding SelectCommand}"/>
-                                    <Button Content="Edit" Classes="Flat" Command="{Binding EditCommand}"/>
-                                    <Button Content="Delete" Classes="Flat" Command="{Binding DeleteCommand}"
+                                    <Button Content="{x:Static p:Resources.Select}" Classes="Flat" Command="{Binding SelectCommand}"/>
+                                    <Button Content="{x:Static p:Resources.Edit}" Classes="Flat" Command="{Binding EditCommand}"/>
+                                    <Button Content="{x:Static p:Resources.Delete}" Classes="Flat" Command="{Binding DeleteCommand}"
                                             IsEnabled="{Binding CanDelete}"/>
                                 </StackPanel>
                             </Grid>
@@ -48,22 +49,22 @@
                             <!-- Editing form -->
                             <StackPanel Spacing="10" IsVisible="{Binding IsEditing}">
                                 <StackPanel Spacing="4">
-                                    <TextBlock Text="Profile Name" FontWeight="SemiBold" FontSize="12"/>
-                                    <TextBox Text="{Binding Name}" Watermark="My Profile"/>
+                                    <TextBlock Text="{x:Static p:Resources.ProfileName}" FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBox Text="{Binding Name}" Watermark="{x:Static p:Resources.MyProfile}"/>
                                 </StackPanel>
                                 <StackPanel Spacing="4">
-                                    <TextBlock Text="Download Path" FontWeight="SemiBold" FontSize="12"/>
-                                    <TextBox Text="{Binding Path}" Watermark="C:\Photos\"
+                                    <TextBlock Text="{x:Static p:Resources.DownloadPath}" FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBox Text="{Binding Path}" Watermark="{x:Static p:Resources.CPhotos}"
                                              FontFamily="Consolas,Courier New,monospace"/>
                                 </StackPanel>
                                 <StackPanel Spacing="4">
-                                    <TextBlock Text="Naming Template" FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBlock Text="{x:Static p:Resources.NamingTemplate}" FontWeight="SemiBold" FontSize="12"/>
                                     <TextBox Text="{Binding NamingTemplate}" Watermark="{}{Y}{m}{D}_{o}"
                                              FontFamily="Consolas,Courier New,monospace"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                                    <Button Content="Cancel" Classes="Flat" Command="{Binding CancelEditCommand}"/>
-                                    <Button Content="Save" Classes="Flat Accent" Command="{Binding SaveEditCommand}"/>
+                                    <Button Content="{x:Static p:Resources.Cancel}" Classes="Flat" Command="{Binding CancelEditCommand}"/>
+                                    <Button Content="{x:Static p:Resources.Save}" Classes="Flat Accent" Command="{Binding SaveEditCommand}"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
