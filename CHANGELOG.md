@@ -4,6 +4,8 @@ All notable ShootPorter changes intended for release notes are tracked here.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-08
+
 ### Added
 
 - Files that already exist at their destination with the same size and time are shown as "Already downloaded" and skipped.

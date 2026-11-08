@@ -64,11 +64,20 @@ jobs:
           --icon src/ShootPorter.App/Assets/shootporter-icon.ico
           --outputDir ${{ env.RELEASES_DIR }}
 
+      - name: Extract release notes from CHANGELOG.md
+        shell: bash
+        run: |
+          awk -v h="## [${{ steps.version.outputs.version }}]" '
+            index($0, h) == 1 {f=1; next}
+            /^## / {f=0}
+            f' CHANGELOG.md > release-notes.md
+          cat release-notes.md
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.version }}
           name: ${{ env.APP_NAME }} v${{ steps.version.outputs.version }}
-          generate_release_notes: true
+          body_path: release-notes.md
           files: |
             ${{ env.RELEASES_DIR }}/*
