@@ -1,93 +1,94 @@
+**English** | [Deutsch](README.de.md) | [Русский](README.ru.md)
+
 # ShootPorter
 
-A cross-platform photo and video downloader and organizer for professional photographers.
+A photo and video downloader and organizer for photographers.
 
-ShootPorter transfers images from card readers, cameras (PTP/MTP), and local folders with smart deduplication, token-based dynamic file/folder naming from EXIF/IPTC metadata, GPS sync, and plugin-based post-processing.
+ShootPorter copies photos and videos from memory cards and folders to your archive. It renames files from their metadata with `{tokens}`, recognizes files that were already downloaded, can back up to two more places and deletes the card only after a verified copy.
 
-Built with **.NET 10** and **Avalonia UI** — runs on Windows, macOS, and Linux.
+Built with **.NET 10** and **Avalonia UI**. Releases are built for Windows; the code also runs on macOS and Linux.
+
+![Transfer queue, dark theme](screenshots/queue-dark.png)
+
+| Light theme | Naming and profiles |
+|---|---|
+| ![Transfer queue, light theme](screenshots/queue-light.png) | ![Download path and naming](screenshots/prefs-naming.png) |
+| **General settings** | **Custom actions** |
+| ![General settings](screenshots/prefs-general.png) | ![Custom actions and after-download options](screenshots/prefs-actions.png) |
 
 ---
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/d85ae7de-2b36-49af-9748-f57167618642" />
+## Download
+
+Get `ShootPorter-win-Setup.exe` from the [latest release](https://github.com/Diddlik/ShootPorter/releases/latest). The app updates itself: it checks on startup, and **Preferences → General → Check for updates** checks on demand.
 
 ---
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0825cf06-8930-4c48-b93d-74a0d911aee3" />
-
 
 ## Features
 
-### Core Download Engine
-- **Multi-source support** — card readers, USB cameras, local/network folders
-- **Parallel file transfers** with configurable concurrency and progress reporting
-- **Smart deduplication** — size, timestamp, and SHA-256 verification to prevent overwrites
-- **Backup destinations** — copy to up to 2 backup paths simultaneously
-- **Auto-delete from source** after verified transfer (optional)
+### Download
+- Sources: card readers, removable drives (listed automatically) and any local or network folder
+- Parallel copies with live progress per file and overall
+- **Already downloaded**: a file whose target already exists with the same name and size is marked and skipped
+- Name clashes are shown before the download; for an existing target you choose overwrite, add a suffix (`_01`, `_02`) or cancel
+- Up to two backup folders
+- Optional delete from the card, only after a SHA-256 match between the source and every copy
+- Sidecars (XMP, WAV, THM) are copied with their main file
 
-### Token-Based Dynamic Naming
-A powerful template engine for destination paths and filenames using `{tokens}`:
+### Naming with tokens
+Destination folders and file names are built from `{tokens}`:
 
 | Token | Description | Example |
 |-------|-------------|---------|
 | `{Y}`, `{m}`, `{D}` | Year, month, day | `2026`, `03`, `29` |
 | `{H}`, `{M}`, `{S}` | Hour, minute, second | `14`, `30`, `05` |
 | `{J}` | Job code | `Wedding_Smith` |
-| `{F}`, `{e}` | Original filename, extension | `IMG_1234`, `CR3` |
-| `{seq#4}` | Sequence counter (zero-padded) | `0001`, `0002` |
-| `{file[5-10]}` | Filename character slice | Substring extraction |
+| `{F}`, `{e}` | Original file name, extension | `IMG_1234`, `CR3` |
+| `{r}` | File number from the original name | `1234` |
+| `{T8}`, `{T9}` | Camera mapping values | `R6` |
+| `{seq#4}` | Sequence counter (zero-padded) | `0001` |
+| `{file[5-10]}` | Part of the file name | `1234` |
 
-String functions: `{upper,...}`, `{lower,...}`, `{left,n,...}`, `{right,n,...}`, `{mid,n,m,...}`, `{capitalize,...}`, `{default,...}`, `{if,...}`
+String functions: `{upper,...}`, `{lower,...}`, `{left,n,...}`, `{right,n,...}`, `{mid,n,m,...}`, `{capitalize,...}`, `{default,...}`, `{if,...}`. **Show Tokens** in the app lists all tokens.
 
-**Example template:** `{Y}-{m}-{D}\{J}\{F}.{e}` produces `2026-03-29\Wedding_Smith\IMG_1234.CR3`
+**Example:** `{Y}-{m}-{D}\{J}\{F}.{e}` gives `2026-03-29\Wedding_Smith\IMG_1234.CR3`
 
-### Metadata Extraction
-- EXIF: date/time, ISO, aperture, shutter speed, camera model, serial number
-- GPS coordinates (latitude, longitude, altitude)
-- IPTC keywords
-- Image dimensions, copyright, artist
+### Capture time
+- Photos: EXIF `DateTimeOriginal`
+- Videos: the camera clock from the most reliable source in the file: Sony clip XML (next to the clip or inside the MP4), the QuickTime `creationdate` key (phones), XMP, or the movie header with the camera time zone derived from the file time. The setting "Video time is local time" is only the last resort.
 
-### GPS & Geo-tagging
-- GPX track file parsing and photo matching via timestamp correlation
-- Reverse geocoding through the [GeoNames](https://www.geonames.org/) API
-- Binary search with linear interpolation for accurate track point matching
+### Profiles and settings
+- Named profiles with destination and naming template
+- Camera mapping: model and serial number to your own values for `{T8}` / `{T9}`
+- Job code with a list of recently used codes; the sequence continues after each download
+- Settings are stored as JSON in `%AppData%/ShootPorter`
 
-### Plugin System
-Interface-based post-download processing with ordered execution:
-- **DirectoryMakerPlugin** — auto-create subdirectories (originals, edited, etc.)
-- **DngConverterPlugin** — Adobe DNG Converter integration
-- **JpegRotatorPlugin** — auto-rotation based on EXIF orientation
+### After download
+- Create subfolders next to the downloaded files (for example `originals, edited, exports`)
+- Convert RAW files to DNG with Adobe DNG Converter
+- A custom button that runs your own script
 
-### Profiles & Settings
-- Named download profiles (destination, template, backups, parallelism)
-- Camera alias mapping — assign friendly names to camera model IDs
-- Job code history with 60-day auto-pruning
-- JSON-based persistence
-
-### Drive Watcher
-- Automatic detection of USB/SD card insertion
-- Removable drive enumeration with event-driven notifications
-
-### CLI Mode
+### Command line
 ```
-shootporter --source E:\ --dest "C:\Photos" --profile Wedding --jobcode "Smith_2026" --parallel 4 --headless
+ShootPorter.exe --source E:\ --profile "Standard Photos" --jobcode Smith_2026
 ```
 
 | Flag | Description |
 |------|-------------|
-| `--source` | Source path |
-| `--dest` | Destination root |
-| `--profile` | Named profile to use |
+| `--source` | Source folder or drive to scan at startup |
+| `--profile` | Profile to select |
 | `--jobcode` | Job code value |
-| `--parallel` | Number of concurrent copies |
-| `--no-verify` | Skip SHA-256 verification |
-| `--auto-delete` | Delete source files after transfer |
-| `--headless` | Run without UI |
 
-### Auto-Update
-Automatic update checking and installation via [Velopack](https://velopack.io/) with GitHub Releases.
+`--dest`, `--parallel`, `--no-verify`, `--auto-delete`, `--no-recursive` and `--headless` are parsed but not used yet.
+
+### Planned
+- GPS: GPX track matching and place names from [GeoNames](https://www.geonames.org/) (the Core code exists, the app does not use it yet)
+- Lossless JPEG rotation
+- Headless mode
 
 ---
 
-## Supported Formats
+## Supported formats
 
 | Category | Formats |
 |----------|---------|
@@ -98,71 +99,53 @@ Automatic update checking and installation via [Velopack](https://velopack.io/) 
 
 ---
 
-## Tech Stack
+## Tech stack
 
 | Layer | Technology |
 |-------|-----------|
 | **Runtime** | .NET 10 |
-| **UI Framework** | [Avalonia UI](https://avaloniaui.net/) 11.x |
-| **UI Theme** | [SukiUI](https://github.com/kikipoulet/SukiUI) |
+| **UI** | [Avalonia UI](https://avaloniaui.net/) 11 with [SukiUI](https://github.com/kikipoulet/SukiUI) |
 | **MVVM** | [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) |
 | **Metadata** | [MetadataExtractor](https://github.com/drewnoakes/metadata-extractor-dotnet) |
-| **Auto-Update** | [Velopack](https://velopack.io/) |
-| **Testing** | [xUnit](https://xunit.net/) |
-| **Persistence** | JSON files |
-| **Logging** | [Serilog](https://serilog.net/) (rolling file in `%LocalAppData%/ShootPorter/logs`) |
+| **Updates** | [Velopack](https://velopack.io/) with GitHub Releases |
+| **Logging** | [Serilog](https://serilog.net/) (`%LocalAppData%/ShootPorter/logs`) |
+| **Tests** | [xUnit](https://xunit.net/) |
 
 ---
 
-## Project Structure
+## Project structure
 
 ```
-ShootPorter_V2/
+ShootPorter/
 ├── src/
-│   ├── ShootPorter.App/              # Avalonia desktop application
-│   │   ├── Models/             # Data models
-│   │   ├── Services/           # Application services (updates, etc.)
-│   │   ├── ViewModels/         # MVVM ViewModels
-│   │   └── Views/              # AXAML views and settings pages
-│   │
-│   └── ShootPorter.Core/             # Business logic library
-│       ├── Cli/                # Command-line argument parsing
-│       ├── Dedup/              # File deduplication engine
-│       ├── Discovery/          # File system scanning & drive monitoring
-│       ├── Download/           # Parallel download orchestration
-│       ├── Geo/                # GPS sync & geocoding
-│       ├── Metadata/           # EXIF/IPTC extraction
-│       ├── Plugins/            # Post-download plugin system
-│       ├── Profiles/           # User profiles & settings persistence
+│   ├── ShootPorter.App/        # Avalonia desktop app (views, view models, update service)
+│   └── ShootPorter.Core/       # Business logic, no UI dependencies
+│       ├── Cli/                # Command-line parsing
+│       ├── Dedup/              # Already-downloaded detection
+│       ├── Discovery/          # Scanning, supported formats, drive watcher
+│       ├── Download/           # Parallel copies, backups, verification
+│       ├── Geo/                # GPX and GeoNames (not used by the app yet)
+│       ├── Metadata/           # EXIF/IPTC and video capture time
+│       ├── Plugins/            # After-download actions
+│       ├── Profiles/           # Camera mapping, job code history
 │       └── Tokens/             # Token template engine
-│
 ├── tests/
-│   └── ShootPorter.Core.Tests/       # 130 xUnit tests
-│
-└── Docs/                       # Requirements & design documents
+│   ├── ShootPorter.Core.Tests/
+│   └── ShootPorter.App.Tests/
+└── screenshots/
 ```
 
 ---
 
-## Getting Started
+## Build from source
 
-### Prerequisites
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-
-### Build & Run
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/shootporter.git
-cd shootporter
-
-# Build
+git clone https://github.com/Diddlik/ShootPorter.git
+cd ShootPorter
 dotnet build
-
-# Run
 dotnet run --project src/ShootPorter.App
-
-# Run tests
 dotnet test
 ```
 
@@ -170,24 +153,16 @@ dotnet test
 
 ## Architecture
 
-ShootPorter follows **strict MVVM** with a clean separation between UI and business logic:
-
-- **ShootPorter.Core** — platform-agnostic library containing all business logic. Zero UI dependencies.
-- **ShootPorter.App** — thin Avalonia shell that binds ViewModels to Views. Views contain no business logic.
-
-Key design decisions:
-- **Async end-to-end** — no sync-over-async; `CancellationToken` propagated throughout
-- **Plugin architecture** — `IPostDownloadPlugin` interface for extensible post-processing
-- **Atomic file operations** — SHA-256 verification before any destructive action
-- **Record types** for immutable DTOs and data structures
+- **ShootPorter.Core** holds all business logic and has no UI dependencies.
+- **ShootPorter.App** is a thin Avalonia shell: views bind to view models, views contain no logic.
+- Async end-to-end with `CancellationToken`; files are verified before anything is deleted.
+- All UI text and log messages are in `Properties/Resources.resx`.
 
 ---
 
-## Legacy Context
+## Background
 
-ShootPorter is a modern rewrite of **Downloader Pro** by Breeze Systems, a Windows utility used by professional photographers for over a decade. The `_old/` directory contains screenshots and documentation from the original application for feature reference.
-
----
+ShootPorter is a rewrite of **Downloader Pro** by Breeze Systems, a Windows tool that photographers used for many years.
 
 ## License
 

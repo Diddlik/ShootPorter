@@ -247,7 +247,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTemplateColumn Header="{x:Static p:Resources.Status}" Width="100">
+                    <DataGridTemplateColumn Header="{x:Static p:Resources.Status}" Width="135">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Border CornerRadius="10" Padding="6,3" 

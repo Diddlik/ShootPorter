@@ -4,6 +4,10 @@ All notable ShootPorter changes intended for release notes are tracked here.
 
 ## [Unreleased]
 
+### Fixed
+
+- The status column is wide enough for "Already downloaded".
+
 ## [0.2.2] - 2026-11-08
 
 ### Added
