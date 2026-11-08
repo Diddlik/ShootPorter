@@ -4,7 +4,7 @@ namespace ShootPorter.Core.Dedup;
 
 /// <summary>
 /// Compares source files against destination files to determine download status.
-/// Uses size comparison first, then timestamp, then optional hash for definitive matching.
+/// A target with the same size counts as downloaded; an optional hash gives a definitive match.
 /// </summary>
 public sealed class FileComparer
 {
@@ -34,14 +34,8 @@ public sealed class FileComparer
             return new FileComparisonResult(sourcePath, destinationPath, FileStatus.SizeMismatch, sourceInfo.Length, destInfo.Length);
         }
 
-        // Size matches — check timestamps
-        var timeDiff = (sourceInfo.LastWriteTimeUtc - destInfo.LastWriteTimeUtc).Duration();
-        if (timeDiff > TimeSpan.FromSeconds(2)) // FAT32 has 2-second resolution
-        {
-            return new FileComparisonResult(sourcePath, destinationPath, FileStatus.TimeMismatch, sourceInfo.Length, destInfo.Length);
-        }
-
-        // Size and time match — treat as already downloaded
+        // Same size is enough: the target name already encodes capture time and file number,
+        // and copies made by other tools or over network shares often carry the copy time.
         return new FileComparisonResult(sourcePath, destinationPath, FileStatus.Downloaded, sourceInfo.Length, destInfo.Length);
     }
 

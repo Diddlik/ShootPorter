@@ -7,12 +7,10 @@ public enum FileStatus
 {
     /// <summary>File does not exist at destination — safe to download.</summary>
     New,
-    /// <summary>File exists at destination with matching size and timestamp — already downloaded.</summary>
+    /// <summary>File exists at destination with matching size — already downloaded.</summary>
     Downloaded,
     /// <summary>File exists at destination with identical content (hash match).</summary>
     Duplicate,
     /// <summary>File exists at destination but size differs — possible corruption or modification.</summary>
     SizeMismatch,
-    /// <summary>File exists at destination but last-modified time differs.</summary>
-    TimeMismatch,
 }

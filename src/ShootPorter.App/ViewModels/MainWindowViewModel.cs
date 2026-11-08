@@ -208,7 +208,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         _ = MarkAlreadyDownloadedAsync();
     }
 
-    // A file whose planned target already exists with the same size and time was downloaded before.
+    // A file whose planned target already exists with the same size was downloaded before.
     private async Task MarkAlreadyDownloadedAsync()
     {
         _dedupCts?.Cancel();

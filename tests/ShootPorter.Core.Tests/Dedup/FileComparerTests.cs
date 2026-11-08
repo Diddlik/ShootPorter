@@ -74,7 +74,7 @@ public sealed class FileComparerTests : IDisposable
     }
 
     [Fact]
-    public void WhenFilesHaveSameSizeButDifferentTimeThenStatusIsTimeMismatch()
+    public void WhenFilesHaveSameSizeButDifferentTimeThenStatusIsDownloaded()
     {
         var content = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 };
         var source = CreateTestFile("source.jpg", content);
@@ -85,7 +85,7 @@ public sealed class FileComparerTests : IDisposable
 
         var result = _comparer.Compare(source, dest);
 
-        Assert.Equal(FileStatus.TimeMismatch, result.Status);
+        Assert.Equal(FileStatus.Downloaded, result.Status);
     }
 
     [Fact]

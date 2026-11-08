@@ -4,6 +4,10 @@ All notable ShootPorter changes intended for release notes are tracked here.
 
 ## [Unreleased]
 
+### Fixed
+
+- "Already downloaded" now only needs the same name and size at the destination. Files copied earlier with the copy time as file time were shown as Pending.
+
 ## [0.2.0] - 2026-11-08
 
 ### Added
