@@ -4,6 +4,8 @@ All notable ShootPorter changes intended for release notes are tracked here.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-08
+
 ### Added
 
 - Settings → General: "Check for updates" button with a status line.
