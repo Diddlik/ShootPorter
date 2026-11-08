@@ -95,49 +95,19 @@ public partial class TransferFileItem : ObservableObject
         _ => "Info"
     };
 
-    public IBrush StatusBackground => Status switch
-    {
-        FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded => BrushCache.Get("#dcfce7"),
-        FileTransferStatus.Downloading => BrushCache.Get("#dbeafe"),
-        FileTransferStatus.NameClash => BrushCache.Get("#fef3c7"),
-        FileTransferStatus.Error => BrushCache.Get("#fee2e2"),
-        _ => BrushCache.Get("#f1f5f9")
-    };
-
-    public IBrush StatusBorder => Status switch
-    {
-        FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded => BrushCache.Get("#86efac"),
-        FileTransferStatus.Downloading => BrushCache.Get("#93c5fd"),
-        FileTransferStatus.NameClash => BrushCache.Get("#fcd34d"),
-        FileTransferStatus.Error => BrushCache.Get("#fca5a5"),
-        _ => BrushCache.Get("#e2e8f0")
-    };
-
-    public IBrush StatusForeground => Status switch
-    {
-        FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded => BrushCache.Get("#166534"),
-        FileTransferStatus.Downloading => BrushCache.Get("#1d4ed8"),
-        FileTransferStatus.NameClash => BrushCache.Get("#92400e"),
-        FileTransferStatus.Error => BrushCache.Get("#991b1b"),
-        _ => BrushCache.Get("#475569")
-    };
-
-    public IBrush ProgressColor => Status switch
-    {
-        FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded => BrushCache.Get("#10b981"),
-        FileTransferStatus.Downloading => BrushCache.Get("#3b82f6"),
-        FileTransferStatus.NameClash => BrushCache.Get("#f59e0b"),
-        _ => BrushCache.Get("#cbd5e1")
-    };
+    public bool IsDone => Status is FileTransferStatus.Completed or FileTransferStatus.AlreadyDownloaded;
+    public bool IsBusy => Status == FileTransferStatus.Downloading;
+    public bool IsClash => Status == FileTransferStatus.NameClash;
+    public bool IsFailed => Status == FileTransferStatus.Error;
 
     partial void OnStatusChanged(FileTransferStatus value)
     {
         OnPropertyChanged(nameof(StatusText));
         OnPropertyChanged(nameof(StatusIcon));
-        OnPropertyChanged(nameof(StatusBackground));
-        OnPropertyChanged(nameof(StatusBorder));
-        OnPropertyChanged(nameof(StatusForeground));
-        OnPropertyChanged(nameof(ProgressColor));
+        OnPropertyChanged(nameof(IsDone));
+        OnPropertyChanged(nameof(IsBusy));
+        OnPropertyChanged(nameof(IsClash));
+        OnPropertyChanged(nameof(IsFailed));
     }
 
     partial void OnSourceDispositionChanged(SourceFileDisposition value)

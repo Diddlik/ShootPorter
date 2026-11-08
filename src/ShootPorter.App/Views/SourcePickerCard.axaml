@@ -23,8 +23,8 @@
                 </Button>
             </Grid>
 
-            <Border CornerRadius="8" Padding="9,7" Background="#111827"
-                    BorderBrush="#223044" BorderThickness="1">
+            <Border CornerRadius="8" Padding="9,7" Background="{DynamicResource SpSurface}"
+                    BorderBrush="{DynamicResource SpDivider}" BorderThickness="1">
                 <TextBlock Text="{Binding DisplaySourcePath}"
                            ToolTip.Tip="{Binding SelectedSourcePath}"
                            FontSize="12" TextTrimming="CharacterEllipsis"/>
@@ -48,8 +48,8 @@
                     <Flyout Placement="Top">
                         <Border Padding="12" MinWidth="220"
                                 CornerRadius="10"
-                                Background="#1B2230"
-                                BorderBrush="#314052"
+                                Background="{DynamicResource SpSurface}"
+                                BorderBrush="{DynamicResource SpDivider}"
                                 BorderThickness="1">
                             <StackPanel Spacing="8">
                                 <TextBlock Text="{x:Static p:Resources.RecentFolders}" FontSize="12"

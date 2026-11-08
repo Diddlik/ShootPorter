@@ -24,10 +24,6 @@ namespace ShootPorter.App.ViewModels;
 /// </summary>
 public partial class SettingsViewModel : ViewModelBase
 {
-    public static readonly IValueConverter TabBgConverter = new TabBackgroundConverter();
-    public static readonly IValueConverter TabFgConverter = new TabForegroundConverter();
-    public static readonly IValueConverter TabBorderConverter = new TabBorderBrushConverter();
-
     private static string SettingsDirectory =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ShootPorter");
 

@@ -1,0 +1,58 @@
+<!-- Muted UI colors for light and dark theme; views use them via DynamicResource. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="SpSurface" Color="#F5F6F8"/>
+            <SolidColorBrush x:Key="SpDivider" Color="#E3E6EA"/>
+            <SolidColorBrush x:Key="SpAccentText" Color="#5B7FA6"/>
+            <SolidColorBrush x:Key="SpTokenText" Color="#7E6BA8"/>
+            <SolidColorBrush x:Key="SpHeaderBg" Color="#F1F3F5"/>
+            <SolidColorBrush x:Key="SpHeaderFg" Color="#3E4652"/>
+            <SolidColorBrush x:Key="SpNeutralBg" Color="#F1F3F5"/>
+            <SolidColorBrush x:Key="SpNeutralBorder" Color="#E1E4E8"/>
+            <SolidColorBrush x:Key="SpNeutralFg" Color="#5F6B78"/>
+            <SolidColorBrush x:Key="SpInfoBg" Color="#EAF1F8"/>
+            <SolidColorBrush x:Key="SpInfoBorder" Color="#C9DAEA"/>
+            <SolidColorBrush x:Key="SpInfoFg" Color="#3F6489"/>
+            <SolidColorBrush x:Key="SpSuccessBg" Color="#EAF4EE"/>
+            <SolidColorBrush x:Key="SpSuccessBorder" Color="#C6DFCF"/>
+            <SolidColorBrush x:Key="SpSuccessFg" Color="#3E7253"/>
+            <SolidColorBrush x:Key="SpWarningBg" Color="#F8F1E4"/>
+            <SolidColorBrush x:Key="SpWarningBorder" Color="#E7D3AE"/>
+            <SolidColorBrush x:Key="SpWarningFg" Color="#8A6630"/>
+            <SolidColorBrush x:Key="SpDangerBg" Color="#F8EAEA"/>
+            <SolidColorBrush x:Key="SpDangerBorder" Color="#E6C4C4"/>
+            <SolidColorBrush x:Key="SpDangerFg" Color="#9A4A4A"/>
+            <SolidColorBrush x:Key="SpChipActiveBg" Color="#E3ECF5"/>
+            <SolidColorBrush x:Key="SpChipActiveBorder" Color="#B9CDE2"/>
+            <SolidColorBrush x:Key="SpChipActiveFg" Color="#34577C"/>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="SpSurface" Color="#1F242C"/>
+            <SolidColorBrush x:Key="SpDivider" Color="#2E3540"/>
+            <SolidColorBrush x:Key="SpAccentText" Color="#8FAACC"/>
+            <SolidColorBrush x:Key="SpTokenText" Color="#B4A6D6"/>
+            <SolidColorBrush x:Key="SpHeaderBg" Color="#20262E"/>
+            <SolidColorBrush x:Key="SpHeaderFg" Color="#C9D1DB"/>
+            <SolidColorBrush x:Key="SpNeutralBg" Color="#262C35"/>
+            <SolidColorBrush x:Key="SpNeutralBorder" Color="#343C47"/>
+            <SolidColorBrush x:Key="SpNeutralFg" Color="#A7B1BD"/>
+            <SolidColorBrush x:Key="SpInfoBg" Color="#22303F"/>
+            <SolidColorBrush x:Key="SpInfoBorder" Color="#33475C"/>
+            <SolidColorBrush x:Key="SpInfoFg" Color="#9DB9D6"/>
+            <SolidColorBrush x:Key="SpSuccessBg" Color="#22332A"/>
+            <SolidColorBrush x:Key="SpSuccessBorder" Color="#34503F"/>
+            <SolidColorBrush x:Key="SpSuccessFg" Color="#9CC7AC"/>
+            <SolidColorBrush x:Key="SpWarningBg" Color="#362F22"/>
+            <SolidColorBrush x:Key="SpWarningBorder" Color="#54472F"/>
+            <SolidColorBrush x:Key="SpWarningFg" Color="#D6BE8E"/>
+            <SolidColorBrush x:Key="SpDangerBg" Color="#3A2626"/>
+            <SolidColorBrush x:Key="SpDangerBorder" Color="#5A3838"/>
+            <SolidColorBrush x:Key="SpDangerFg" Color="#DBA0A0"/>
+            <SolidColorBrush x:Key="SpChipActiveBg" Color="#2A3A4D"/>
+            <SolidColorBrush x:Key="SpChipActiveBorder" Color="#3F5872"/>
+            <SolidColorBrush x:Key="SpChipActiveFg" Color="#CFE0F2"/>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

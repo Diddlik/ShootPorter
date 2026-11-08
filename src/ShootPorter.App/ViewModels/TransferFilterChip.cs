@@ -42,17 +42,6 @@ public partial class TransferFilterChip : ObservableObject
     public string Label { get; }
     public string DisplayText => $"{Label} {Count}";
 
-    public IBrush Background => IsActive ? BrushCache.Get("#2563eb") : BrushCache.Get("#111827");
-    public IBrush BorderBrush => IsActive ? BrushCache.Get("#60a5fa") : BrushCache.Get("#2c384b");
-    public IBrush Foreground => IsActive ? Brushes.White : BrushCache.Get("#cbd5e1");
-
-    partial void OnIsActiveChanged(bool value)
-    {
-        OnPropertyChanged(nameof(Background));
-        OnPropertyChanged(nameof(BorderBrush));
-        OnPropertyChanged(nameof(Foreground));
-    }
-
     partial void OnCountChanged(int value)
     {
         OnPropertyChanged(nameof(DisplayText));

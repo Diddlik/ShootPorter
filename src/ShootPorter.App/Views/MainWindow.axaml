@@ -71,9 +71,9 @@
                                     </StackPanel>
                                     <suki:GlassCard Padding="10,6" IsVisible="{Binding HasConflicts}">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <PathIcon Data="{StaticResource IconWarning}" Width="14" Height="14" Foreground="#f59e0b"/>
+                                            <PathIcon Data="{StaticResource IconWarning}" Width="14" Height="14" Foreground="{DynamicResource SpWarningFg}"/>
                                             <TextBlock Text="{Binding ConflictCount, StringFormat='{}{0} Conflicts'}" 
-                                                       Foreground="#f59e0b" FontSize="13"/>
+                                                       Foreground="{DynamicResource SpWarningFg}" FontSize="13"/>
                                         </StackPanel>
                                     </suki:GlassCard>
                                     <Button Classes="Flat" Command="{Binding RunCustomActionCommand}"

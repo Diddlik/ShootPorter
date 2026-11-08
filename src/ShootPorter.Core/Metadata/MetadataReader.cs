@@ -1,7 +1,12 @@
+using System.Globalization;
+using System.Xml;
+using System.Xml.Linq;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.QuickTime;
+using Serilog;
+using ShootPorter.Core.Properties;
 
 namespace ShootPorter.Core.Metadata;
 
@@ -36,7 +41,7 @@ public sealed class MetadataReader(bool videoTimeIsLocal = false) : IMetadataRea
         return new FileMetadata
         {
             FilePath = filePath,
-            CaptureDateTime = ExtractDateTime(exifSubIfd, exifIfd0) ?? ExtractVideoDateTime(movieHeader),
+            CaptureDateTime = ExtractDateTime(exifSubIfd, exifIfd0) ?? ReadClipSidecarDate(filePath) ?? ExtractVideoDateTime(movieHeader),
             CameraManufacturer = exifIfd0?.GetDescription(ExifDirectoryBase.TagMake)?.Trim(),
             CameraModel = exifIfd0?.GetDescription(ExifDirectoryBase.TagModel)?.Trim(),
             CameraSerialNumber = (exifSubIfd?.GetDescription(ExifDirectoryBase.TagBodySerialNumber)
@@ -67,6 +72,30 @@ public sealed class MetadataReader(bool videoTimeIsLocal = false) : IMetadataRea
             return new DateTimeOffset(dt);
 
         return null;
+    }
+
+    // Sony writes UTC into the movie header; the clip sidecar (C0001.MP4 -> C0001M01.XML) holds the camera clock.
+    // The wall-clock part is used, like for photos, so videos and photos of one shoot sort together.
+    private static DateTimeOffset? ReadClipSidecarDate(string filePath)
+    {
+        var sidecar = Path.Combine(Path.GetDirectoryName(filePath) ?? string.Empty,
+            Path.GetFileNameWithoutExtension(filePath) + "M01.XML");
+        if (!File.Exists(sidecar))
+            return null;
+
+        try
+        {
+            var value = XDocument.Load(sidecar).Descendants()
+                .FirstOrDefault(e => e.Name.LocalName == "CreationDate")?.Attribute("value")?.Value;
+            return DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+                ? new DateTimeOffset(date.DateTime)
+                : null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or XmlException)
+        {
+            Log.Warning(ex, Resources.LogReadingClipSidecarFailed, sidecar);
+            return null;
+        }
     }
 
     private DateTimeOffset? ExtractVideoDateTime(QuickTimeMovieHeaderDirectory? movieHeader)

@@ -20,7 +20,7 @@
         <ProgressBar Value="{Binding DownloadProgress}" Maximum="100"
                      IsVisible="{Binding IsDownloading}" Height="8"/>
 
-        <TextBlock Text="{Binding ErrorMessage}" Foreground="#ef4444"
+        <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource SpDangerFg}"
                    TextWrapping="Wrap" IsVisible="{Binding HasError}"/>
 
         <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">

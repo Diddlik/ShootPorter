@@ -42,7 +42,7 @@
                 <ItemsControl ItemsSource="{Binding CameraMappings}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:CameraMappingItem">
-                            <Border BorderBrush="#e2e8f0" BorderThickness="0,0,0,1" Padding="0,8" Margin="0,0,0,4">
+                            <Border BorderBrush="{DynamicResource SpDivider}" BorderThickness="0,0,0,1" Padding="0,8" Margin="0,0,0,4">
                                 <Grid ColumnDefinitions="*,120,120,Auto" ColumnSpacing="12">
                                     <StackPanel Spacing="2">
                                         <TextBlock Text="{x:Static p:Resources.Camera}" Opacity="0.5" FontSize="10"/>

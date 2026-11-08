@@ -1,7 +1,6 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Avalonia.Data.Converters;
 
 namespace ShootPorter.App.ViewModels;
 
@@ -10,11 +9,6 @@ namespace ShootPorter.App.ViewModels;
 /// </summary>
 public partial class ProfileItem : ObservableObject
 {
-    public static readonly IValueConverter BorderConverter = new ProfileBorderConverter();
-    public static readonly IValueConverter ButtonTextConverter = new ProfileButtonTextConverter();
-    public static readonly IValueConverter ButtonBgConverter = new ProfileButtonBgConverter();
-    public static readonly IValueConverter ButtonFgConverter = new ProfileButtonFgConverter();
-
     private readonly Action<ProfileItem>? _onSelect;
     private readonly Action<ProfileItem>? _onDelete;
     private readonly Action<ProfileItem>? _onSave;

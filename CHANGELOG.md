@@ -8,7 +8,13 @@ All notable ShootPorter changes intended for release notes are tracked here.
 
 - Settings → General: "Check for updates" button with a status line.
 
+### Fixed
+
+- Sony videos (e.g. FDR-AX53) get the camera's clock time from the clip sidecar (`C0001M01.XML`). The MP4 header holds UTC, so file names were off by the time zone and earlier downloads were not recognized.
+
 ### Changed
+
+- Softer colors in light and dark theme; status badges, filter chips and table headers follow the theme.
 
 - Updates are read from the GitHub release download URL instead of the GitHub API, so checks are not rate limited.
 

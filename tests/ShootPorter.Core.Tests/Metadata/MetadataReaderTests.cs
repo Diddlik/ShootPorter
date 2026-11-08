@@ -60,6 +60,28 @@ public sealed class MetadataReaderTests
         }
     }
 
+    [Fact]
+    public async Task WhenSonyClipSidecarExistsThenCaptureDateIsItsCameraClock()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), $"sp-meta-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(dir);
+        try
+        {
+            var path = Path.Combine(dir, "C0001.MP4");
+            await File.WriteAllBytesAsync(path, BuildMp4(new DateTime(2026, 11, 5, 15, 44, 59, DateTimeKind.Utc)));
+            await File.WriteAllTextAsync(Path.Combine(dir, "C0001M01.XML"),
+                """<?xml version="1.0" encoding="UTF-8"?><NonRealTimeMeta xmlns="urn:schemas-professionalDisc:nonRealTimeMeta:ver.2.20"><CreationDate value="2026-11-05T17:44:59+02:00"/></NonRealTimeMeta>""");
+
+            var metadata = await new MetadataReader().ReadMetadataAsync(path);
+
+            Assert.Equal(new DateTime(2026, 11, 5, 17, 44, 59), metadata.CaptureDateTime?.DateTime);
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
     private static async Task<string> WriteTempFileAsync(string extension, byte[] content)
     {
         var path = Path.Combine(Path.GetTempPath(), $"sp-meta-{Guid.NewGuid():N}{extension}");

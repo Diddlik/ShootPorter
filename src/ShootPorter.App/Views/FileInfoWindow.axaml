@@ -38,15 +38,15 @@
 
         <!-- Error message -->
         <Border Grid.Row="1" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                Background="#fee2e2" CornerRadius="8" Padding="16" VerticalAlignment="Top">
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="#991b1b" TextWrapping="Wrap"/>
+                Background="{DynamicResource SpDangerBg}" CornerRadius="8" Padding="16" VerticalAlignment="Top">
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource SpDangerFg}" TextWrapping="Wrap"/>
         </Border>
 
         <!-- Metadata content -->
         <ScrollViewer Grid.Row="1" IsVisible="{Binding !IsLoading}">
             <StackPanel Spacing="16">
                 <!-- Camera Section -->
-                <Border Background="#f8fafc" CornerRadius="8" Padding="12">
+                <Border Background="{DynamicResource SpSurface}" CornerRadius="8" Padding="12">
                     <StackPanel Spacing="8">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <PathIcon Data="{StaticResource IconCamera}" Width="14" Height="14"/>
@@ -66,7 +66,7 @@
                 </Border>
 
                 <!-- Exposure Section -->
-                <Border Background="#f8fafc" CornerRadius="8" Padding="12">
+                <Border Background="{DynamicResource SpSurface}" CornerRadius="8" Padding="12">
                     <StackPanel Spacing="8">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <PathIcon Data="{StaticResource IconExposure}" Width="14" Height="14"/>
@@ -89,7 +89,7 @@
                 </Border>
 
                 <!-- GPS Section -->
-                <Border Background="#f8fafc" CornerRadius="8" Padding="12">
+                <Border Background="{DynamicResource SpSurface}" CornerRadius="8" Padding="12">
                     <StackPanel Spacing="8">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <PathIcon Data="{StaticResource IconMapMarker}" Width="14" Height="14"/>
@@ -106,7 +106,7 @@
                 </Border>
 
                 <!-- Copyright Section -->
-                <Border Background="#f8fafc" CornerRadius="8" Padding="12">
+                <Border Background="{DynamicResource SpSurface}" CornerRadius="8" Padding="12">
                     <StackPanel Spacing="8">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <PathIcon Data="{StaticResource IconCopyright}" Width="14" Height="14"/>
