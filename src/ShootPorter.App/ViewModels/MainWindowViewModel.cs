@@ -57,6 +57,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         SourcePicker.ScanCompleted += OnScanCompleted;
         SourcePicker.FilesAdded += OnFilesAdded;
         SettingsViewModel.PropertyChanged += OnSettingsPropertyChanged;
+        SettingsViewModel.UpdateCheck = CheckForUpdateNowAsync;
         SelectedProfile = SettingsViewModel.SelectedProfile ?? Profiles.FirstOrDefault();
 
         _ = InitializeAsync();
@@ -127,21 +128,30 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     private async Task CheckForUpdateAsync()
     {
-        if (!SettingsViewModel.CheckForUpdates)
-            return;
+        if (SettingsViewModel.CheckForUpdates)
+            await CheckForUpdateNowAsync();
+    }
+
+    // Returns a status line for the settings page; shows the update dialog when a newer version exists.
+    private async Task<string> CheckForUpdateNowAsync()
+    {
+        if (!_updateService.IsInstalled)
+            return Resources.UpdateNotInstalled;
 
         try
         {
             var newVersion = await _updateService.CheckForUpdateAsync();
             if (newVersion is null)
-                return;
+                return string.Format(Resources.UpdateUpToDate, _updateService.CurrentVersion);
 
             await Dispatcher.UIThread.InvokeAsync(() =>
                 ShowUpdateDialog?.Invoke(new UpdateViewModel(_updateService, _updateService.CurrentVersion, newVersion)));
+            return string.Format(Resources.UpdateFound, newVersion);
         }
         catch (Exception ex) when (ex is HttpRequestException or IOException or JsonException or OperationCanceledException)
         {
             Log.Warning(ex, Resources.LogUpdateCheckFailed);
+            return Resources.UpdateCheckFailed;
         }
     }
 

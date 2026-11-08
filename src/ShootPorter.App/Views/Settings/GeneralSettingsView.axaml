@@ -22,6 +22,10 @@
                     <ToggleSwitch IsChecked="{Binding CheckForUpdates}" OnContent="" OffContent=""/>
                     <TextBlock Text="{x:Static p:Resources.CheckForUpdatesOnStartup}" VerticalAlignment="Center"/>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <Button Content="{x:Static p:Resources.CheckForUpdatesNow}" Command="{Binding CheckForUpdatesNowCommand}"/>
+                    <TextBlock Text="{Binding UpdateStatus}" VerticalAlignment="Center" Opacity="0.7"/>
+                </StackPanel>
             </StackPanel>
         </suki:GlassCard>
 

@@ -297,4 +297,10 @@
   <data name="UseCaptureTimeForFileTimestamp" xml:space="preserve"><value>Use capture time for file timestamp</value></data>
   <data name="UseTheseTokensInYourFilename" xml:space="preserve"><value>Use these tokens in your filename template to generate dynamic filenames</value></data>
   <data name="VideoTimeIsLocalTimeOff" xml:space="preserve"><value>Video time is local time (off: UTC, as phones write it)</value></data>
+  <data name="CheckForUpdatesNow" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="UpdateChecking" xml:space="preserve"><value>Checking for updates...</value></data>
+  <data name="UpdateUpToDate" xml:space="preserve"><value>You are on the latest version ({0}).</value></data>
+  <data name="UpdateFound" xml:space="preserve"><value>Version {0} is available.</value></data>
+  <data name="UpdateCheckFailed" xml:space="preserve"><value>Update check failed. See the log for details.</value></data>
+  <data name="UpdateNotInstalled" xml:space="preserve"><value>Updates are only available in the installed app.</value></data>
 </root>

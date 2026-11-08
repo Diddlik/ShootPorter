@@ -260,6 +260,21 @@ public partial class SettingsViewModel : ViewModelBase
     }
 
     partial void OnCheckForUpdatesChanged(bool value) => ScheduleSave();
+
+    internal Func<Task<string>>? UpdateCheck { get; set; }
+
+    [ObservableProperty]
+    private string _updateStatus = string.Empty;
+
+    [RelayCommand]
+    private async Task CheckForUpdatesNowAsync()
+    {
+        if (UpdateCheck is null)
+            return;
+
+        UpdateStatus = Resources.UpdateChecking;
+        UpdateStatus = await UpdateCheck();
+    }
     partial void OnIsAutoDetectChanged(bool value) => ScheduleSave();
     partial void OnIsCameraUsbChanged(bool value) => ScheduleSave();
     partial void OnIsCardReaderChanged(bool value) => ScheduleSave();

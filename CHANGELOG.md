@@ -4,6 +4,14 @@ All notable ShootPorter changes intended for release notes are tracked here.
 
 ## [Unreleased]
 
+### Added
+
+- Settings → General: "Check for updates" button with a status line.
+
+### Changed
+
+- Updates are read from the GitHub release download URL instead of the GitHub API, so checks are not rate limited.
+
 ## [0.2.1] - 2026-11-08
 
 ### Fixed

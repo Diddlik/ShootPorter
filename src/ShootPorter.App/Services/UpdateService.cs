@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Velopack;
-using Velopack.Sources;
 
 namespace ShootPorter.App.Services;
 
@@ -11,15 +10,15 @@ namespace ShootPorter.App.Services;
 /// </summary>
 public sealed class UpdateService
 {
-    private const string RepoUrl = "https://github.com/Diddlik/ShootPorter";
+    // The release download URL is served without the GitHub API, so it has no rate limit.
+    private const string FeedUrl = "https://github.com/Diddlik/ShootPorter/releases/latest/download/";
 
     private readonly UpdateManager _updateManager;
     private UpdateInfo? _pendingUpdate;
 
     public UpdateService()
     {
-        var source = new GithubSource(RepoUrl, accessToken: null, prerelease: false);
-        _updateManager = new UpdateManager(source);
+        _updateManager = new UpdateManager(FeedUrl);
     }
 
     /// <summary>
