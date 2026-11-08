@@ -82,6 +82,61 @@ public sealed class MetadataReaderTests
         }
     }
 
+    [Fact]
+    public async Task WhenSonyXmlIsEmbeddedInTheFileThenCaptureDateIsItsCameraClock()
+    {
+        var xml = Encoding.UTF8.GetBytes("""<NonRealTimeMeta><CreationDate value="2026-11-05T17:44:59+02:00"/></NonRealTimeMeta>""");
+        var path = await WriteTempFileAsync(".mp4", BuildMp4(new DateTime(2026, 11, 5, 15, 44, 59, DateTimeKind.Utc), moovExtra: xml));
+        try
+        {
+            var metadata = await new MetadataReader(videoTimeIsLocal: true).ReadMetadataAsync(path);
+
+            Assert.Equal(new DateTime(2026, 11, 5, 17, 44, 59), metadata.CaptureDateTime?.DateTime);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task WhenFileTimeMatchesHeaderPlusZoneThenCameraOffsetIsApplied()
+    {
+        var path = await WriteTempFileAsync(".mp4", BuildMp4(new DateTime(2026, 11, 5, 15, 44, 59, DateTimeKind.Utc), durationMs: 3840));
+        try
+        {
+            // Camera clock is 2 h ahead of the UTC header; the file time is set when recording stops.
+            File.SetLastWriteTime(path, new DateTime(2026, 11, 5, 17, 45, 4));
+
+            var metadata = await new MetadataReader(videoTimeIsLocal: true).ReadMetadataAsync(path);
+
+            Assert.Equal(new DateTime(2026, 11, 5, 17, 44, 59), metadata.CaptureDateTime?.DateTime);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task WhenFileTimeIsUnrelatedThenVideoTimeSettingIsUsed()
+    {
+        var created = new DateTime(2026, 11, 5, 15, 44, 59, DateTimeKind.Utc);
+        var path = await WriteTempFileAsync(".mp4", BuildMp4(created));
+        try
+        {
+            File.SetLastWriteTime(path, new DateTime(2026, 11, 5, 19, 2, 30));
+
+            var metadata = await new MetadataReader(videoTimeIsLocal: true).ReadMetadataAsync(path);
+
+            Assert.Equal(new DateTime(2026, 11, 5, 15, 44, 59), metadata.CaptureDateTime?.DateTime);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
     private static async Task<string> WriteTempFileAsync(string extension, byte[] content)
     {
         var path = Path.Combine(Path.GetTempPath(), $"sp-meta-{Guid.NewGuid():N}{extension}");
@@ -125,7 +180,7 @@ public sealed class MetadataReaderTests
         BinaryPrimitives.WriteUInt32LittleEndian(span[14..], 0);
     }
 
-    private static byte[] BuildMp4(DateTime createdUtc)
+    private static byte[] BuildMp4(DateTime createdUtc, int durationMs = 0, byte[]? moovExtra = null)
     {
         var seconds = (uint)(createdUtc - new DateTime(1904, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
 
@@ -135,6 +190,7 @@ public sealed class MetadataReaderTests
         BinaryPrimitives.WriteUInt32BigEndian(mvhd.AsSpan(12), seconds);
         BinaryPrimitives.WriteUInt32BigEndian(mvhd.AsSpan(16), seconds);
         BinaryPrimitives.WriteUInt32BigEndian(mvhd.AsSpan(20), 1000);
+        BinaryPrimitives.WriteUInt32BigEndian(mvhd.AsSpan(24), (uint)durationMs);
         BinaryPrimitives.WriteUInt32BigEndian(mvhd.AsSpan(28), 0x00010000);
         BinaryPrimitives.WriteUInt16BigEndian(mvhd.AsSpan(32), 0x0100);
         BinaryPrimitives.WriteUInt32BigEndian(mvhd.AsSpan(104), 1);
@@ -145,10 +201,19 @@ public sealed class MetadataReaderTests
         "ftyp"u8.CopyTo(header.AsSpan(4));
         mp4.Write(header);
         mp4.Write("isom\0\0\u0002\0isom"u8);
-        BinaryPrimitives.WriteUInt32BigEndian(header, (uint)(8 + mvhd.Length));
+        var extra = moovExtra ?? [];
+        var freeLength = extra.Length == 0 ? 0 : 8 + extra.Length;
+        BinaryPrimitives.WriteUInt32BigEndian(header, (uint)(8 + mvhd.Length + freeLength));
         "moov"u8.CopyTo(header.AsSpan(4));
         mp4.Write(header);
         mp4.Write(mvhd);
+        if (freeLength > 0)
+        {
+            BinaryPrimitives.WriteUInt32BigEndian(header, (uint)freeLength);
+            "free"u8.CopyTo(header.AsSpan(4));
+            mp4.Write(header);
+            mp4.Write(extra);
+        }
         return mp4.ToArray();
     }
 }

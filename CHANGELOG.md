@@ -10,7 +10,7 @@ All notable ShootPorter changes intended for release notes are tracked here.
 
 ### Fixed
 
-- Sony videos (e.g. FDR-AX53) get the camera's clock time from the clip sidecar (`C0001M01.XML`). The MP4 header holds UTC, so file names were off by the time zone and earlier downloads were not recognized.
+- Video dates use the camera clock from the best source in the file: Sony clip XML (`C0001M01.XML` or inside the MP4), the QuickTime `creationdate` key (phones), XMP, or the movie header with the camera time zone derived from the file time. The "Video time is local time" setting is only the last resort. Sony videos (e.g. FDR-AX53) were off by the time zone before, so earlier downloads were not recognized.
 
 ### Changed
 

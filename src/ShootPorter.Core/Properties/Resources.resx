@@ -25,5 +25,5 @@
   <data name="SourceRetainedMismatch" xml:space="preserve"><value>Source retained because a copy does not match the source content.</value></data>
   <data name="SourceRetainedNoVerify" xml:space="preserve"><value>Source retained because transfer verification is disabled.</value></data>
   <data name="SourceRetainedSidecarFailed" xml:space="preserve"><value>Source retained because a sidecar copy failed.</value></data>
-  <data name="LogReadingClipSidecarFailed" xml:space="preserve"><value>Reading clip sidecar {Path} failed</value></data>
+  <data name="LogReadingTheVideoDateFailed" xml:space="preserve"><value>Reading the video date from {Path} failed</value></data>
 </root>
